@@ -27,6 +27,11 @@ type DB struct {
 	*sql.DB
 }
 
+// New creates a new DB wrapper from an existing sql.DB connection
+func New(sqlDB *sql.DB) *DB {
+	return &DB{sqlDB}
+}
+
 // Open opens or creates the database at ~/.djou/djou.db
 func Open() (*DB, error) {
 	homeDir, err := os.UserHomeDir()
