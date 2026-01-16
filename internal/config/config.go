@@ -9,7 +9,7 @@ import (
 
 // Config represents the application configuration
 type Config struct {
-	Tags   TagConfig   `yaml:"tags,omitempty"`
+	Tags   TagConfig    `yaml:"tags,omitempty"`
 	Export ExportConfig `yaml:"export,omitempty"`
 }
 
