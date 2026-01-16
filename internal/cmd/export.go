@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/kca2250/djou/internal/config"
 	"github.com/kca2250/djou/internal/db"
 	"github.com/kca2250/djou/internal/model"
 	"github.com/kca2250/djou/internal/ui"
@@ -46,8 +47,24 @@ func runExport(cmd *cobra.Command, args []string) error {
 	localizer := ui.NewAutoLocalizer()
 	ui.SetGlobalLocalizer(localizer)
 
+	// Determine output directory
+	outputDir := exportOutput
+
+	// If --output flag is not set (default "."), check config
+	if !cmd.Flags().Changed("output") {
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("%s", localizer.Getf(ui.MsgError, err.Error()))
+		}
+
+		// Use config value if set
+		if configDir := cfg.GetExportOutputDir(); configDir != "" {
+			outputDir = configDir
+		}
+	}
+
 	// Validate output directory
-	info, err := os.Stat(exportOutput)
+	info, err := os.Stat(outputDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return ErrDirectoryNotFound
@@ -102,7 +119,7 @@ func runExport(cmd *cobra.Command, args []string) error {
 
 	// Generate filename
 	currentMonth := time.Now().Format("2006-01")
-	filePath := generateFilename(exportOutput, currentMonth)
+	filePath := generateFilename(outputDir, currentMonth)
 
 	// Write CSV
 	if err := writeCSV(filePath, logs); err != nil {
