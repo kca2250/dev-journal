@@ -69,7 +69,6 @@ func TestParsePositiveFloat(t *testing.T) {
 	}
 }
 
-
 func TestValidateTaskName(t *testing.T) {
 	tests := []struct {
 		name    string

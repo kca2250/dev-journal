@@ -59,7 +59,6 @@ func ParsePositiveFloat(s string) (float64, error) {
 	return v, nil
 }
 
-
 // ValidateTaskName validates the task name field
 func ValidateTaskName(s string) error {
 	if strings.TrimSpace(s) == "" {
@@ -82,7 +81,6 @@ func ValidatePositiveFloat(s string) error {
 	}
 	return nil
 }
-
 
 // RecordForm creates and runs the interactive record form
 type RecordForm struct {
