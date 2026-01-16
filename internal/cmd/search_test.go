@@ -39,9 +39,7 @@ func TestSearchCmd_RequiresArgs(t *testing.T) {
 func TestGetMatchFields(t *testing.T) {
 	localizer := ui.NewLocalizer("ja")
 
-	problem := "CORSエラーが発生"
-	solution := "プロキシを設定"
-	learning := "APIの仕様を確認すべき"
+	memo := "CORSエラーが発生"
 
 	tests := []struct {
 		name      string
@@ -58,37 +56,19 @@ func TestGetMatchFields(t *testing.T) {
 			wantCount: 1,
 		},
 		{
-			name: "match in problem",
+			name: "match in memo",
 			log: model.Log{
 				TaskName: "API実装",
-				Problem:  &problem,
+				Memo:     &memo,
 			},
 			keywords:  []string{"CORS"},
 			wantCount: 1,
 		},
 		{
-			name: "match in solution",
-			log: model.Log{
-				TaskName: "API実装",
-				Solution: &solution,
-			},
-			keywords:  []string{"プロキシ"},
-			wantCount: 1,
-		},
-		{
-			name: "match in learning",
-			log: model.Log{
-				TaskName: "API実装",
-				Learning: &learning,
-			},
-			keywords:  []string{"API"},
-			wantCount: 2, // matches task name and learning
-		},
-		{
 			name: "multiple keywords match multiple fields",
 			log: model.Log{
 				TaskName: "ログイン実装",
-				Problem:  &problem,
+				Memo:     &memo,
 			},
 			keywords:  []string{"ログイン", "CORS"},
 			wantCount: 2,
@@ -160,13 +140,13 @@ func TestContains(t *testing.T) {
 func TestRenderSearchTable(t *testing.T) {
 	localizer := ui.NewLocalizer("ja")
 
-	problem := "CORSエラー"
+	memo := "CORSエラー"
 	logs := []model.Log{
 		{
 			ID:        1,
 			CreatedAt: time.Date(2025, 1, 10, 10, 0, 0, 0, time.Local),
 			TaskName:  "ログイン実装",
-			Problem:   &problem,
+			Memo:      &memo,
 		},
 	}
 

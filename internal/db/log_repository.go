@@ -27,12 +27,11 @@ func (o ListOptions) GetLimit() int {
 
 // Stats represents aggregated statistics
 type Stats struct {
-	Count          int
-	MinDate        *time.Time
-	MaxDate        *time.Time
-	TotalEstimate  float64
-	TotalActual    float64
-	TotalAIMinutes int
+	Count         int
+	MinDate       *time.Time
+	MaxDate       *time.Time
+	TotalEstimate float64
+	TotalActual   float64
 }
 
 // MonthlyStats represents monthly aggregated statistics
@@ -56,34 +55,24 @@ func NewLogRepository(db *DB) *LogRepository {
 // Create inserts a new log entry
 func (r *LogRepository) Create(ctx context.Context, input *model.LogInput) error {
 	query := `
-		INSERT INTO logs (task_name, estimate_hours, actual_hours, ai_minutes, problem, solution, learning)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO logs (task_name, estimate_hours, actual_hours, memo, tags)
+		VALUES (?, ?, ?, ?, ?)
 	`
 
-	var aiMinutes *int
-	if input.AIMinutes > 0 {
-		aiMinutes = &input.AIMinutes
+	var memo, tags *string
+	if input.Memo != "" {
+		memo = &input.Memo
 	}
-
-	var problem, solution, learning *string
-	if input.Problem != "" {
-		problem = &input.Problem
-	}
-	if input.Solution != "" {
-		solution = &input.Solution
-	}
-	if input.Learning != "" {
-		learning = &input.Learning
+	if input.Tags != "" {
+		tags = &input.Tags
 	}
 
 	_, err := r.db.ExecContext(ctx, query,
 		input.TaskName,
 		input.EstimateHours,
 		input.ActualHours,
-		aiMinutes,
-		problem,
-		solution,
-		learning,
+		memo,
+		tags,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create log: %w", err)
@@ -95,7 +84,7 @@ func (r *LogRepository) Create(ctx context.Context, input *model.LogInput) error
 // List retrieves logs with optional filters
 func (r *LogRepository) List(ctx context.Context, opts ListOptions) ([]model.Log, error) {
 	query := `
-		SELECT id, created_at, task_name, estimate_hours, actual_hours, ai_minutes, problem, solution, learning
+		SELECT id, created_at, task_name, estimate_hours, actual_hours, memo, tags
 		FROM logs
 	`
 	args := []any{}
@@ -162,7 +151,7 @@ func (r *LogRepository) Search(ctx context.Context, keywords []string, limit int
 	}
 
 	query := `
-		SELECT id, created_at, task_name, estimate_hours, actual_hours, ai_minutes, problem, solution, learning
+		SELECT id, created_at, task_name, estimate_hours, actual_hours, memo, tags
 		FROM logs
 		WHERE 1=1
 	`
@@ -172,12 +161,10 @@ func (r *LogRepository) Search(ctx context.Context, keywords []string, limit int
 	for _, keyword := range keywords {
 		query += ` AND (
 			task_name LIKE ? OR
-			problem LIKE ? OR
-			solution LIKE ? OR
-			learning LIKE ?
+			memo LIKE ?
 		)`
 		pattern := "%" + keyword + "%"
-		args = append(args, pattern, pattern, pattern, pattern)
+		args = append(args, pattern, pattern)
 	}
 
 	query += " ORDER BY created_at DESC, id DESC"
@@ -203,8 +190,7 @@ func (r *LogRepository) GetStats(ctx context.Context) (*Stats, error) {
 			MIN(created_at) as min_date,
 			MAX(created_at) as max_date,
 			COALESCE(SUM(estimate_hours), 0) as total_estimate,
-			COALESCE(SUM(actual_hours), 0) as total_actual,
-			COALESCE(SUM(ai_minutes), 0) as total_ai_minutes
+			COALESCE(SUM(actual_hours), 0) as total_actual
 		FROM logs
 	`
 
@@ -217,7 +203,6 @@ func (r *LogRepository) GetStats(ctx context.Context) (*Stats, error) {
 		&maxDate,
 		&stats.TotalEstimate,
 		&stats.TotalActual,
-		&stats.TotalAIMinutes,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get stats: %w", err)
@@ -287,8 +272,7 @@ func (r *LogRepository) GetStatsByMonth(ctx context.Context, month string) (*Sta
 			MIN(created_at) as min_date,
 			MAX(created_at) as max_date,
 			COALESCE(SUM(estimate_hours), 0) as total_estimate,
-			COALESCE(SUM(actual_hours), 0) as total_actual,
-			COALESCE(SUM(ai_minutes), 0) as total_ai_minutes
+			COALESCE(SUM(actual_hours), 0) as total_actual
 		FROM logs
 		WHERE created_at >= ? AND created_at < ?
 	`
@@ -302,7 +286,6 @@ func (r *LogRepository) GetStatsByMonth(ctx context.Context, month string) (*Sta
 		&maxDate,
 		&stats.TotalEstimate,
 		&stats.TotalActual,
-		&stats.TotalAIMinutes,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get stats by month: %w", err)
@@ -327,7 +310,7 @@ func (r *LogRepository) GetStatsByMonth(ctx context.Context, month string) (*Sta
 // Export retrieves logs for export with optional date range
 func (r *LogRepository) Export(ctx context.Context, from, to *time.Time) ([]model.Log, error) {
 	query := `
-		SELECT id, created_at, task_name, estimate_hours, actual_hours, ai_minutes, problem, solution, learning
+		SELECT id, created_at, task_name, estimate_hours, actual_hours, memo, tags
 		FROM logs
 	`
 	args := []any{}
@@ -369,10 +352,8 @@ func scanLogs(rows *sql.Rows) ([]model.Log, error) {
 			&log.TaskName,
 			&log.EstimateHours,
 			&log.ActualHours,
-			&log.AIMinutes,
-			&log.Problem,
-			&log.Solution,
-			&log.Learning,
+			&log.Memo,
+			&log.Tags,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan log: %w", err)

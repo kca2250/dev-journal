@@ -3,19 +3,15 @@ package ui
 // Message keys for internationalization
 const (
 	// Record command messages
-	MsgRecordSuccess       = "record_success"
-	MsgRecordCancelled     = "record_cancelled"
-	MsgTaskNameLabel       = "task_name_label"
-	MsgEstimateHoursLabel  = "estimate_hours_label"
-	MsgActualHoursLabel    = "actual_hours_label"
-	MsgAIMinutesLabel      = "ai_minutes_label"
-	MsgProblemLabel        = "problem_label"
-	MsgSolutionLabel       = "solution_label"
-	MsgLearningLabel       = "learning_label"
-	MsgTaskNameRequired    = "task_name_required"
-	MsgInvalidNumber       = "invalid_number"
-	MsgPositiveRequired    = "positive_required"
-	MsgNonNegativeRequired = "non_negative_required"
+	MsgRecordSuccess      = "record_success"
+	MsgRecordCancelled    = "record_cancelled"
+	MsgTaskNameLabel      = "task_name_label"
+	MsgEstimateHoursLabel = "estimate_hours_label"
+	MsgActualHoursLabel   = "actual_hours_label"
+	MsgMemoLabel          = "memo_label"
+	MsgTaskNameRequired   = "task_name_required"
+	MsgInvalidNumber      = "invalid_number"
+	MsgPositiveRequired   = "positive_required"
 
 	// List command messages
 	MsgNoLogs     = "no_logs"
@@ -26,9 +22,7 @@ const (
 	MsgSearchResults    = "search_results"
 	MsgHeaderMatchField = "header_match_field"
 	MsgMatchTaskName    = "match_task_name"
-	MsgMatchProblem     = "match_problem"
-	MsgMatchSolution    = "match_solution"
-	MsgMatchLearning    = "match_learning"
+	MsgMatchMemo        = "match_memo"
 	MsgSelectDetail     = "select_detail"
 	MsgDetailHeader     = "detail_header"
 
@@ -38,7 +32,6 @@ const (
 	MsgStatsPeriod       = "stats_period"
 	MsgStatsTotalHours   = "stats_total_hours"
 	MsgStatsAccuracy     = "stats_accuracy"
-	MsgStatsTotalAI      = "stats_total_ai"
 	MsgStatsMonthlyTable = "stats_monthly_table"
 	MsgStatsNoData       = "stats_no_data"
 
@@ -54,7 +47,7 @@ const (
 	MsgHeaderTask     = "header_task"
 	MsgHeaderEstimate = "header_estimate"
 	MsgHeaderActual   = "header_actual"
-	MsgHeaderAI       = "header_ai"
+	MsgHeaderMemo     = "header_memo"
 	MsgHeaderMonth    = "header_month"
 	MsgHeaderCount    = "header_count"
 
@@ -67,19 +60,15 @@ const (
 var messages = map[string]map[string]string{
 	"ja": {
 		// Record command messages
-		MsgRecordSuccess:       "ログを記録しました",
-		MsgRecordCancelled:     "記録をキャンセルしました",
-		MsgTaskNameLabel:       "タスク名",
-		MsgEstimateHoursLabel:  "見積時間 (h)",
-		MsgActualHoursLabel:    "実績時間 (h)",
-		MsgAIMinutesLabel:      "AI使用時間 (min)",
-		MsgProblemLabel:        "課題・問題点",
-		MsgSolutionLabel:       "解決策",
-		MsgLearningLabel:       "学び",
-		MsgTaskNameRequired:    "タスク名は必須です",
-		MsgInvalidNumber:       "有効な数値を入力してください",
-		MsgPositiveRequired:    "正の数を入力してください",
-		MsgNonNegativeRequired: "0以上の数を入力してください",
+		MsgRecordSuccess:      "ログを記録しました",
+		MsgRecordCancelled:    "記録をキャンセルしました",
+		MsgTaskNameLabel:      "タスク名",
+		MsgEstimateHoursLabel: "見積時間 (h)",
+		MsgActualHoursLabel:   "実績時間 (h)",
+		MsgMemoLabel:          "メモ",
+		MsgTaskNameRequired:   "タスク名は必須です",
+		MsgInvalidNumber:      "有効な数値を入力してください",
+		MsgPositiveRequired:   "正の数を入力してください",
 
 		// List command messages
 		MsgNoLogs:     "ログがありません",
@@ -90,9 +79,7 @@ var messages = map[string]map[string]string{
 		MsgSearchResults:    "検索結果: %d件",
 		MsgHeaderMatchField: "マッチ箇所",
 		MsgMatchTaskName:    "タスク名",
-		MsgMatchProblem:     "ハマったこと",
-		MsgMatchSolution:    "解決方法",
-		MsgMatchLearning:    "学び",
+		MsgMatchMemo:        "メモ",
 		MsgSelectDetail:     "詳細を表示する番号を選択 (0で終了):",
 		MsgDetailHeader:     "詳細情報",
 
@@ -102,7 +89,6 @@ var messages = map[string]map[string]string{
 		MsgStatsPeriod:       "期間: %s 〜 %s",
 		MsgStatsTotalHours:   "合計時間: 見積 %.1fh / 実績 %.1fh",
 		MsgStatsAccuracy:     "見積精度: %.0f%%",
-		MsgStatsTotalAI:      "AI使用時間: %dmin",
 		MsgStatsMonthlyTable: "月別統計",
 		MsgStatsNoData:       "データがありません",
 
@@ -118,7 +104,7 @@ var messages = map[string]map[string]string{
 		MsgHeaderTask:     "タスク",
 		MsgHeaderEstimate: "見積",
 		MsgHeaderActual:   "実績",
-		MsgHeaderAI:       "AI",
+		MsgHeaderMemo:     "メモ",
 		MsgHeaderMonth:    "月",
 		MsgHeaderCount:    "件数",
 
@@ -128,19 +114,15 @@ var messages = map[string]map[string]string{
 	},
 	"en": {
 		// Record command messages
-		MsgRecordSuccess:       "Log recorded successfully",
-		MsgRecordCancelled:     "Record cancelled",
-		MsgTaskNameLabel:       "Task name",
-		MsgEstimateHoursLabel:  "Estimate hours (h)",
-		MsgActualHoursLabel:    "Actual hours (h)",
-		MsgAIMinutesLabel:      "AI usage time (min)",
-		MsgProblemLabel:        "Problems/Issues",
-		MsgSolutionLabel:       "Solution",
-		MsgLearningLabel:       "Learning",
-		MsgTaskNameRequired:    "Task name is required",
-		MsgInvalidNumber:       "Please enter a valid number",
-		MsgPositiveRequired:    "Please enter a positive number",
-		MsgNonNegativeRequired: "Please enter a non-negative number",
+		MsgRecordSuccess:      "Log recorded successfully",
+		MsgRecordCancelled:    "Record cancelled",
+		MsgTaskNameLabel:      "Task name",
+		MsgEstimateHoursLabel: "Estimate hours (h)",
+		MsgActualHoursLabel:   "Actual hours (h)",
+		MsgMemoLabel:          "Memo",
+		MsgTaskNameRequired:   "Task name is required",
+		MsgInvalidNumber:      "Please enter a valid number",
+		MsgPositiveRequired:   "Please enter a positive number",
 
 		// List command messages
 		MsgNoLogs:     "No logs found",
@@ -151,9 +133,7 @@ var messages = map[string]map[string]string{
 		MsgSearchResults:    "Search results: %d",
 		MsgHeaderMatchField: "Match Field",
 		MsgMatchTaskName:    "Task Name",
-		MsgMatchProblem:     "Problem",
-		MsgMatchSolution:    "Solution",
-		MsgMatchLearning:    "Learning",
+		MsgMatchMemo:        "Memo",
 		MsgSelectDetail:     "Select number to view details (0 to exit):",
 		MsgDetailHeader:     "Details",
 
@@ -163,7 +143,6 @@ var messages = map[string]map[string]string{
 		MsgStatsPeriod:       "Period: %s - %s",
 		MsgStatsTotalHours:   "Total hours: Est %.1fh / Act %.1fh",
 		MsgStatsAccuracy:     "Estimate accuracy: %.0f%%",
-		MsgStatsTotalAI:      "AI usage time: %dmin",
 		MsgStatsMonthlyTable: "Monthly Statistics",
 		MsgStatsNoData:       "No data available",
 
@@ -179,7 +158,7 @@ var messages = map[string]map[string]string{
 		MsgHeaderTask:     "Task",
 		MsgHeaderEstimate: "Est",
 		MsgHeaderActual:   "Act",
-		MsgHeaderAI:       "AI",
+		MsgHeaderMemo:     "Memo",
 		MsgHeaderMonth:    "Month",
 		MsgHeaderCount:    "Count",
 

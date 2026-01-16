@@ -6,10 +6,9 @@ import (
 )
 
 var (
-	ErrEmptyTaskName    = errors.New("task name is required")
-	ErrInvalidEstimate  = errors.New("estimate hours must be positive")
-	ErrInvalidActual    = errors.New("actual hours must be positive")
-	ErrInvalidAIMinutes = errors.New("AI minutes must be non-negative")
+	ErrEmptyTaskName   = errors.New("task name is required")
+	ErrInvalidEstimate = errors.New("estimate hours must be positive")
+	ErrInvalidActual   = errors.New("actual hours must be positive")
 )
 
 // ValidateInput validates the log input
@@ -22,9 +21,6 @@ func ValidateInput(input *LogInput) error {
 	}
 	if input.ActualHours <= 0 {
 		return ErrInvalidActual
-	}
-	if input.AIMinutes < 0 {
-		return ErrInvalidAIMinutes
 	}
 	return nil
 }

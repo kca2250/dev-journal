@@ -93,12 +93,6 @@ func showOverallStats(ctx context.Context, repo *db.LogRepository, l *ui.Localiz
 	// Hours
 	fmt.Println(l.Getf(ui.MsgStatsTotalHours, stats.TotalEstimate, stats.TotalActual))
 	fmt.Println(l.Getf(ui.MsgStatsAccuracy, calculateAccuracy(stats.TotalEstimate, stats.TotalActual)))
-	fmt.Println()
-
-	// AI usage
-	aiHours := float64(stats.TotalAIMinutes) / 60.0
-	aiRate := calculateAIRate(stats.TotalAIMinutes, stats.TotalActual)
-	fmt.Printf(l.Getf(ui.MsgStatsTotalAI, stats.TotalAIMinutes)+" (%.1fh, %.0f%%)\n", aiHours, aiRate)
 
 	return nil
 }
@@ -139,12 +133,6 @@ func showStatsForMonth(ctx context.Context, repo *db.LogRepository, l *ui.Locali
 	// Hours
 	fmt.Println(l.Getf(ui.MsgStatsTotalHours, stats.TotalEstimate, stats.TotalActual))
 	fmt.Println(l.Getf(ui.MsgStatsAccuracy, calculateAccuracy(stats.TotalEstimate, stats.TotalActual)))
-	fmt.Println()
-
-	// AI usage
-	aiHours := float64(stats.TotalAIMinutes) / 60.0
-	aiRate := calculateAIRate(stats.TotalAIMinutes, stats.TotalActual)
-	fmt.Printf(l.Getf(ui.MsgStatsTotalAI, stats.TotalAIMinutes)+" (%.1fh, %.0f%%)\n", aiHours, aiRate)
 
 	return nil
 }
@@ -189,21 +177,6 @@ func calculateAccuracy(estimate, actual float64) float64 {
 func formatAccuracy(estimate, actual float64) string {
 	accuracy := calculateAccuracy(estimate, actual)
 	return fmt.Sprintf("%.0f%%", accuracy)
-}
-
-// calculateAIRate calculates AI usage rate as a percentage
-func calculateAIRate(aiMinutes int, actualHours float64) float64 {
-	if actualHours == 0 {
-		return 0
-	}
-	aiHours := float64(aiMinutes) / 60.0
-	return (aiHours / actualHours) * 100
-}
-
-// formatAIRate formats the AI usage rate as a percentage string
-func formatAIRate(aiMinutes int, actualHours float64) string {
-	rate := calculateAIRate(aiMinutes, actualHours)
-	return fmt.Sprintf("%.0f%%", rate)
 }
 
 // validateMonthFormat validates the month format (YYYY-MM)

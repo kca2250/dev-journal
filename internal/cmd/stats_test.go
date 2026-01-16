@@ -74,49 +74,6 @@ func TestFormatAccuracy(t *testing.T) {
 	}
 }
 
-func TestFormatAIRate(t *testing.T) {
-	tests := []struct {
-		name      string
-		aiMinutes int
-		actual    float64
-		want      string
-	}{
-		{
-			name:      "normal rate",
-			aiMinutes: 60,
-			actual:    5.0,
-			want:      "20%",
-		},
-		{
-			name:      "zero actual",
-			aiMinutes: 30,
-			actual:    0,
-			want:      "0%",
-		},
-		{
-			name:      "zero ai minutes",
-			aiMinutes: 0,
-			actual:    10.0,
-			want:      "0%",
-		},
-		{
-			name:      "both zero",
-			aiMinutes: 0,
-			actual:    0,
-			want:      "0%",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := formatAIRate(tt.aiMinutes, tt.actual)
-			if got != tt.want {
-				t.Errorf("formatAIRate(%v, %v) = %q, want %q", tt.aiMinutes, tt.actual, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestRenderMonthlyStatsTable(t *testing.T) {
 	stats := []db.MonthlyStats{
 		{Month: "2025-01", Count: 15, TotalEstimate: 25.0, TotalActual: 32.5},

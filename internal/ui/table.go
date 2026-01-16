@@ -97,15 +97,6 @@ func isWideRune(r rune) bool {
 		(r >= 0xFFE0 && r <= 0xFFE6) // Full-width symbols
 }
 
-// FormatAIMinutes formats AI minutes for display
-// Returns "-" for nil or 0, otherwise "Xmin"
-func FormatAIMinutes(minutes *int) string {
-	if minutes == nil || *minutes == 0 {
-		return "-"
-	}
-	return fmt.Sprintf("%dmin", *minutes)
-}
-
 // FormatHours formats hours for display as "X.Xh"
 func FormatHours(hours float64) string {
 	return fmt.Sprintf("%.1fh", hours)

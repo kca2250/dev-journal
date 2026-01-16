@@ -76,19 +76,9 @@ func getMatchFields(log model.Log, keywords []string, l *ui.Localizer) []string 
 				matches = append(matches, l.Get(ui.MsgMatchTaskName))
 			}
 		}
-		if log.Problem != nil && strings.Contains(strings.ToLower(*log.Problem), kw) {
-			if !contains(matches, l.Get(ui.MsgMatchProblem)) {
-				matches = append(matches, l.Get(ui.MsgMatchProblem))
-			}
-		}
-		if log.Solution != nil && strings.Contains(strings.ToLower(*log.Solution), kw) {
-			if !contains(matches, l.Get(ui.MsgMatchSolution)) {
-				matches = append(matches, l.Get(ui.MsgMatchSolution))
-			}
-		}
-		if log.Learning != nil && strings.Contains(strings.ToLower(*log.Learning), kw) {
-			if !contains(matches, l.Get(ui.MsgMatchLearning)) {
-				matches = append(matches, l.Get(ui.MsgMatchLearning))
+		if log.Memo != nil && strings.Contains(strings.ToLower(*log.Memo), kw) {
+			if !contains(matches, l.Get(ui.MsgMatchMemo)) {
+				matches = append(matches, l.Get(ui.MsgMatchMemo))
 			}
 		}
 	}

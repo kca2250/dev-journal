@@ -89,7 +89,6 @@ func renderLogTable(w *os.File, logs []model.Log, l *ui.Localizer) {
 		l.Get(ui.MsgHeaderTask),
 		l.Get(ui.MsgHeaderEstimate),
 		l.Get(ui.MsgHeaderActual),
-		l.Get(ui.MsgHeaderAI),
 	}
 
 	rows := make([][]string, len(logs))
@@ -99,7 +98,6 @@ func renderLogTable(w *os.File, logs []model.Log, l *ui.Localizer) {
 			ui.TruncateString(log.TaskName, 20),
 			ui.FormatHours(log.EstimateHours),
 			ui.FormatHours(log.ActualHours),
-			ui.FormatAIMinutes(log.AIMinutes),
 		}
 	}
 
