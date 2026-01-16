@@ -311,18 +311,3 @@ go test ./...
 ```bash
 make ci
 ```
-
----
-
-## 今後の予定
-
-- [ ] MCP Server機能（Claude Codeとの連携）- [#11](https://github.com/kca2250/dev-journal/issues/11)
-- [ ] search詳細表示オプション - [#12](https://github.com/kca2250/dev-journal/issues/12)
-
-詳細は [docs/roadmap-v2.md](./docs/roadmap-v2.md) を参照。
-
----
-
-## ライセンス
-
-MIT License
