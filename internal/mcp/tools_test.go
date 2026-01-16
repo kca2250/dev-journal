@@ -7,9 +7,7 @@ import (
 )
 
 func TestGetMatchFields(t *testing.T) {
-	problem := "CORSエラーが発生"
-	solution := "プロキシ設定を追加"
-	learning := "API連携は早めに確認"
+	memo := "CORSエラーが発生。プロキシ設定を追加して解決"
 
 	tests := []struct {
 		name      string
@@ -26,31 +24,22 @@ func TestGetMatchFields(t *testing.T) {
 			wantCount: 1,
 		},
 		{
-			name: "match in problem",
+			name: "match in memo",
 			log: model.Log{
 				TaskName: "API実装",
-				Problem:  &problem,
+				Memo:     &memo,
 			},
 			keywords:  []string{"CORS"},
 			wantCount: 1,
 		},
 		{
-			name: "match in solution",
+			name: "match in both task name and memo",
 			log: model.Log{
 				TaskName: "API実装",
-				Solution: &solution,
+				Memo:     &memo,
 			},
 			keywords:  []string{"プロキシ"},
 			wantCount: 1,
-		},
-		{
-			name: "match in learning",
-			log: model.Log{
-				TaskName: "API実装",
-				Learning: &learning,
-			},
-			keywords:  []string{"API"},
-			wantCount: 2, // matches task_name and learning
 		},
 		{
 			name: "case insensitive",

@@ -30,17 +30,11 @@ func registerRecordTool(s *server.MCPServer) {
 			mcp.Required(),
 			mcp.Description("実績時間（時間）"),
 		),
-		mcp.WithNumber("ai_minutes",
-			mcp.Description("AI活用時間（分）、デフォルト: 0"),
+		mcp.WithString("memo",
+			mcp.Description("メモ（課題、解決策、学びなど）"),
 		),
-		mcp.WithString("problem",
-			mcp.Description("ハマったこと"),
-		),
-		mcp.WithString("solution",
-			mcp.Description("解決方法"),
-		),
-		mcp.WithString("learning",
-			mcp.Description("学び"),
+		mcp.WithString("tags",
+			mcp.Description("タグ（カンマ区切り）"),
 		),
 	)
 
@@ -64,10 +58,8 @@ func handleRecord(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallTo
 		return mcp.NewToolResultError("actual_hours は必須です"), nil
 	}
 
-	aiMinutes := request.GetInt("ai_minutes", 0)
-	problem := request.GetString("problem", "")
-	solution := request.GetString("solution", "")
-	learning := request.GetString("learning", "")
+	memo := request.GetString("memo", "")
+	tags := request.GetString("tags", "")
 
 	// Open database
 	database, err := db.Open()
@@ -81,10 +73,8 @@ func handleRecord(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallTo
 		TaskName:      taskName,
 		EstimateHours: estimateHours,
 		ActualHours:   actualHours,
-		AIMinutes:     aiMinutes,
-		Problem:       problem,
-		Solution:      solution,
-		Learning:      learning,
+		Memo:          memo,
+		Tags:          tags,
 	}
 
 	// Save to database
@@ -145,24 +135,32 @@ func handleList(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallTool
 
 	// Build markdown table
 	var sb strings.Builder
-	sb.WriteString("| 日付 | タスク | 見積もり | 実績 | AI活用 |\n")
+	sb.WriteString("| 日付 | タスク | 見積もり | 実績 | メモ |\n")
 	sb.WriteString("|---|---|---|---|---|\n")
 
 	for _, log := range logs {
-		aiMinutes := "-"
-		if log.AIMinutes != nil {
-			aiMinutes = fmt.Sprintf("%dmin", *log.AIMinutes)
+		memo := "-"
+		if log.Memo != nil && *log.Memo != "" {
+			memo = truncateString(*log.Memo, 20)
 		}
 		sb.WriteString(fmt.Sprintf("| %s | %s | %.1fh | %.1fh | %s |\n",
 			log.CreatedAt.Format("2006-01-02"),
 			log.TaskName,
 			log.EstimateHours,
 			log.ActualHours,
-			aiMinutes,
+			memo,
 		))
 	}
 
 	return mcp.NewToolResultText(sb.String()), nil
+}
+
+func truncateString(s string, maxLen int) string {
+	runes := []rune(s)
+	if len(runes) <= maxLen {
+		return s
+	}
+	return string(runes[:maxLen-3]) + "..."
 }
 
 // registerSearchTool registers the djou_search tool
@@ -238,19 +236,9 @@ func getMatchFields(log model.Log, keywords []string) []string {
 				matches = append(matches, "タスク名")
 			}
 		}
-		if log.Problem != nil && strings.Contains(strings.ToLower(*log.Problem), kwLower) {
-			if !containsString(matches, "ハマったこと") {
-				matches = append(matches, "ハマったこと")
-			}
-		}
-		if log.Solution != nil && strings.Contains(strings.ToLower(*log.Solution), kwLower) {
-			if !containsString(matches, "解決方法") {
-				matches = append(matches, "解決方法")
-			}
-		}
-		if log.Learning != nil && strings.Contains(strings.ToLower(*log.Learning), kwLower) {
-			if !containsString(matches, "学び") {
-				matches = append(matches, "学び")
+		if log.Memo != nil && strings.Contains(strings.ToLower(*log.Memo), kwLower) {
+			if !containsString(matches, "メモ") {
+				matches = append(matches, "メモ")
 			}
 		}
 	}
@@ -315,15 +303,6 @@ func handleStats(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToo
 			accuracy := (stats.TotalEstimate / stats.TotalActual) * 100
 			sb.WriteString(fmt.Sprintf("  見積もり精度: %.0f%%\n", accuracy))
 		}
-
-		if stats.TotalAIMinutes > 0 {
-			sb.WriteString("\n🤖 AI活用\n")
-			sb.WriteString(fmt.Sprintf("  AI活用時間: %dmin\n", stats.TotalAIMinutes))
-			if stats.TotalActual > 0 {
-				aiRate := (float64(stats.TotalAIMinutes) / (stats.TotalActual * 60)) * 100
-				sb.WriteString(fmt.Sprintf("  AI活用率: %.0f%%\n", aiRate))
-			}
-		}
 	} else {
 		// Overall stats
 		stats, err := repo.GetStats(ctx)
@@ -344,15 +323,6 @@ func handleStats(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToo
 		if stats.TotalActual > 0 {
 			accuracy := (stats.TotalEstimate / stats.TotalActual) * 100
 			sb.WriteString(fmt.Sprintf("  見積もり精度: %.0f%%\n", accuracy))
-		}
-
-		if stats.TotalAIMinutes > 0 {
-			sb.WriteString("\n🤖 AI活用\n")
-			sb.WriteString(fmt.Sprintf("  AI活用時間: %dmin\n", stats.TotalAIMinutes))
-			if stats.TotalActual > 0 {
-				aiRate := (float64(stats.TotalAIMinutes) / (stats.TotalActual * 60)) * 100
-				sb.WriteString(fmt.Sprintf("  AI活用率: %.0f%%\n", aiRate))
-			}
 		}
 	}
 
@@ -493,39 +463,29 @@ func writeCSV(filePath string, logs []model.Log) error {
 	}
 
 	// Write header
-	headers := "date,task_name,estimate_hours,actual_hours,ai_minutes,problem,solution,learning\n"
+	headers := "date,task_name,estimate_hours,actual_hours,memo,tags\n"
 	if _, err := file.WriteString(headers); err != nil {
 		return err
 	}
 
 	// Write data
 	for _, log := range logs {
-		aiMinutes := ""
-		if log.AIMinutes != nil {
-			aiMinutes = fmt.Sprintf("%d", *log.AIMinutes)
+		memo := ""
+		if log.Memo != nil {
+			memo = escapeCSV(*log.Memo)
 		}
-		problem := ""
-		if log.Problem != nil {
-			problem = escapeCSV(*log.Problem)
-		}
-		solution := ""
-		if log.Solution != nil {
-			solution = escapeCSV(*log.Solution)
-		}
-		learning := ""
-		if log.Learning != nil {
-			learning = escapeCSV(*log.Learning)
+		tags := ""
+		if log.Tags != nil {
+			tags = escapeCSV(*log.Tags)
 		}
 
-		row := fmt.Sprintf("%s,%s,%.1f,%.1f,%s,%s,%s,%s\n",
+		row := fmt.Sprintf("%s,%s,%.1f,%.1f,%s,%s\n",
 			log.CreatedAt.Format("2006-01-02"),
 			escapeCSV(log.TaskName),
 			log.EstimateHours,
 			log.ActualHours,
-			aiMinutes,
-			problem,
-			solution,
-			learning,
+			memo,
+			tags,
 		)
 		if _, err := file.WriteString(row); err != nil {
 			return err
