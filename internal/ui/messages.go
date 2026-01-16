@@ -22,8 +22,15 @@ const (
 	MsgLogsHeader = "logs_header"
 
 	// Search command messages
-	MsgSearchNoResults = "search_no_results"
-	MsgSearchResults   = "search_results"
+	MsgSearchNoResults  = "search_no_results"
+	MsgSearchResults    = "search_results"
+	MsgHeaderMatchField = "header_match_field"
+	MsgMatchTaskName    = "match_task_name"
+	MsgMatchProblem     = "match_problem"
+	MsgMatchSolution    = "match_solution"
+	MsgMatchLearning    = "match_learning"
+	MsgSelectDetail     = "select_detail"
+	MsgDetailHeader     = "detail_header"
 
 	// Stats command messages
 	MsgStatsHeader       = "stats_header"
@@ -79,8 +86,15 @@ var messages = map[string]map[string]string{
 		MsgLogsHeader: "開発ログ一覧",
 
 		// Search command messages
-		MsgSearchNoResults: "検索結果がありません",
-		MsgSearchResults:   "検索結果: %d件",
+		MsgSearchNoResults:  "検索結果がありません",
+		MsgSearchResults:    "検索結果: %d件",
+		MsgHeaderMatchField: "マッチ箇所",
+		MsgMatchTaskName:    "タスク名",
+		MsgMatchProblem:     "ハマったこと",
+		MsgMatchSolution:    "解決方法",
+		MsgMatchLearning:    "学び",
+		MsgSelectDetail:     "詳細を表示する番号を選択 (0で終了):",
+		MsgDetailHeader:     "詳細情報",
 
 		// Stats command messages
 		MsgStatsHeader:       "統計情報",
@@ -133,8 +147,15 @@ var messages = map[string]map[string]string{
 		MsgLogsHeader: "Development Logs",
 
 		// Search command messages
-		MsgSearchNoResults: "No results found",
-		MsgSearchResults:   "Search results: %d",
+		MsgSearchNoResults:  "No results found",
+		MsgSearchResults:    "Search results: %d",
+		MsgHeaderMatchField: "Match Field",
+		MsgMatchTaskName:    "Task Name",
+		MsgMatchProblem:     "Problem",
+		MsgMatchSolution:    "Solution",
+		MsgMatchLearning:    "Learning",
+		MsgSelectDetail:     "Select number to view details (0 to exit):",
+		MsgDetailHeader:     "Details",
 
 		// Stats command messages
 		MsgStatsHeader:       "Statistics",
