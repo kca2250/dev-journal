@@ -41,6 +41,14 @@ const (
 	MsgExportCreated  = "export_created"
 	MsgExportFileNote = "export_file_note"
 
+	// Config command messages
+	MsgConfigInitSuccess   = "config_init_success"
+	MsgConfigCreated       = "config_created"
+	MsgConfigAlreadyExists = "config_already_exists"
+	MsgConfigNotFound      = "config_not_found"
+	MsgConfigInitHint      = "config_init_hint"
+	MsgConfigPath          = "config_path"
+
 	// Table headers
 	MsgHeaderID       = "header_id"
 	MsgHeaderDate     = "header_date"
@@ -98,6 +106,14 @@ var messages = map[string]map[string]string{
 		MsgExportCreated:  "ファイルを作成しました: %s",
 		MsgExportFileNote: "※同名ファイルが存在したため連番を追加しました",
 
+		// Config command messages
+		MsgConfigInitSuccess:   "設定ファイルを作成しました",
+		MsgConfigCreated:       "作成先: %s",
+		MsgConfigAlreadyExists: "設定ファイルは既に存在します",
+		MsgConfigNotFound:      "設定ファイルが見つかりません",
+		MsgConfigInitHint:      "djou config init で作成できます",
+		MsgConfigPath:          "設定ファイル: %s",
+
 		// Table headers
 		MsgHeaderID:       "ID",
 		MsgHeaderDate:     "日付",
@@ -151,6 +167,14 @@ var messages = map[string]map[string]string{
 		MsgExportNoLogs:   "No logs to export",
 		MsgExportCreated:  "File created: %s",
 		MsgExportFileNote: "* Sequential number added due to existing file",
+
+		// Config command messages
+		MsgConfigInitSuccess:   "Config file created",
+		MsgConfigCreated:       "Created: %s",
+		MsgConfigAlreadyExists: "Config file already exists",
+		MsgConfigNotFound:      "Config file not found",
+		MsgConfigInitHint:      "Run 'djou config init' to create one",
+		MsgConfigPath:          "Config file: %s",
 
 		// Table headers
 		MsgHeaderID:       "ID",
