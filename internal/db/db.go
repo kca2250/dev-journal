@@ -15,10 +15,8 @@ CREATE TABLE IF NOT EXISTS logs (
 	task_name TEXT NOT NULL,
 	estimate_hours REAL NOT NULL,
 	actual_hours REAL NOT NULL,
-	ai_minutes INTEGER,
-	problem TEXT,
-	solution TEXT,
-	learning TEXT
+	memo TEXT,
+	tags TEXT
 );
 `
 

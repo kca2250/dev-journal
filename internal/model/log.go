@@ -9,10 +9,8 @@ type Log struct {
 	TaskName      string
 	EstimateHours float64
 	ActualHours   float64
-	AIMinutes     *int
-	Problem       *string
-	Solution      *string
-	Learning      *string
+	Memo          *string
+	Tags          *string
 }
 
 // LogInput represents user input for creating a new log entry
@@ -20,8 +18,6 @@ type LogInput struct {
 	TaskName      string
 	EstimateHours float64
 	ActualHours   float64
-	AIMinutes     int
-	Problem       string
-	Solution      string
-	Learning      string
+	Memo          string
+	Tags          string
 }

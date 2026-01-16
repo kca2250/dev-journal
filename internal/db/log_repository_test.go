@@ -24,10 +24,7 @@ func TestLogRepository_Create(t *testing.T) {
 				TaskName:      "テストタスク",
 				EstimateHours: 2.0,
 				ActualHours:   3.0,
-				AIMinutes:     30,
-				Problem:       "問題",
-				Solution:      "解決",
-				Learning:      "学び",
+				Memo:          "メモ内容",
 			},
 			wantErr: false,
 		},
@@ -144,9 +141,9 @@ func TestLogRepository_Search(t *testing.T) {
 
 	// Create test data
 	testData := []model.LogInput{
-		{TaskName: "ログイン実装", EstimateHours: 2, ActualHours: 3, Problem: "CORSエラー"},
-		{TaskName: "API実装", EstimateHours: 1, ActualHours: 1, Learning: "CORSの設定が重要"},
-		{TaskName: "DB設計", EstimateHours: 1, ActualHours: 2, Problem: "正規化の判断"},
+		{TaskName: "ログイン実装", EstimateHours: 2, ActualHours: 3, Memo: "CORSエラーでハマった"},
+		{TaskName: "API実装", EstimateHours: 1, ActualHours: 1, Memo: "CORSの設定が重要"},
+		{TaskName: "DB設計", EstimateHours: 1, ActualHours: 2, Memo: "正規化の判断が難しい"},
 		{TaskName: "テスト作成", EstimateHours: 1, ActualHours: 1},
 	}
 
@@ -169,7 +166,7 @@ func TestLogRepository_Search(t *testing.T) {
 			wantCount: 1,
 		},
 		{
-			name:      "single keyword in problem",
+			name:      "single keyword in memo",
 			keywords:  []string{"CORS"},
 			limit:     0,
 			wantCount: 2,
@@ -215,9 +212,9 @@ func TestLogRepository_GetStats(t *testing.T) {
 
 	// Create test data
 	testData := []model.LogInput{
-		{TaskName: "タスク1", EstimateHours: 2, ActualHours: 3, AIMinutes: 30},
-		{TaskName: "タスク2", EstimateHours: 1, ActualHours: 1, AIMinutes: 20},
-		{TaskName: "タスク3", EstimateHours: 3, ActualHours: 4, AIMinutes: 60},
+		{TaskName: "タスク1", EstimateHours: 2, ActualHours: 3, Memo: "メモ1"},
+		{TaskName: "タスク2", EstimateHours: 1, ActualHours: 1, Memo: "メモ2"},
+		{TaskName: "タスク3", EstimateHours: 3, ActualHours: 4, Memo: "メモ3"},
 	}
 
 	for _, input := range testData {
@@ -239,9 +236,6 @@ func TestLogRepository_GetStats(t *testing.T) {
 	}
 	if stats.TotalActual != 8 {
 		t.Errorf("TotalActual = %f, want 8", stats.TotalActual)
-	}
-	if stats.TotalAIMinutes != 110 {
-		t.Errorf("TotalAIMinutes = %d, want 110", stats.TotalAIMinutes)
 	}
 }
 

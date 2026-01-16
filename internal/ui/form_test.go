@@ -69,76 +69,6 @@ func TestParsePositiveFloat(t *testing.T) {
 	}
 }
 
-func TestParseNonNegativeInt(t *testing.T) {
-	tests := []struct {
-		name    string
-		input   string
-		want    int
-		wantErr bool
-	}{
-		{
-			name:    "valid positive int",
-			input:   "30",
-			want:    30,
-			wantErr: false,
-		},
-		{
-			name:    "zero is valid",
-			input:   "0",
-			want:    0,
-			wantErr: false,
-		},
-		{
-			name:    "empty returns zero",
-			input:   "",
-			want:    0,
-			wantErr: false,
-		},
-		{
-			name:    "whitespace returns zero",
-			input:   "  ",
-			want:    0,
-			wantErr: false,
-		},
-		{
-			name:    "valid with whitespace",
-			input:   "  15  ",
-			want:    15,
-			wantErr: false,
-		},
-		{
-			name:    "negative is invalid",
-			input:   "-1",
-			want:    0,
-			wantErr: true,
-		},
-		{
-			name:    "non-numeric is invalid",
-			input:   "abc",
-			want:    0,
-			wantErr: true,
-		},
-		{
-			name:    "float is invalid",
-			input:   "1.5",
-			want:    0,
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseNonNegativeInt(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseNonNegativeInt() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseNonNegativeInt() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestValidateTaskName(t *testing.T) {
 	tests := []struct {
@@ -211,59 +141,15 @@ func TestValidatePositiveFloat(t *testing.T) {
 	}
 }
 
-func TestValidateNonNegativeInt(t *testing.T) {
-	tests := []struct {
-		name    string
-		input   string
-		wantErr bool
-	}{
-		{
-			name:    "valid positive",
-			input:   "30",
-			wantErr: false,
-		},
-		{
-			name:    "zero is valid",
-			input:   "0",
-			wantErr: false,
-		},
-		{
-			name:    "empty is valid",
-			input:   "",
-			wantErr: false,
-		},
-		{
-			name:    "negative is invalid",
-			input:   "-1",
-			wantErr: true,
-		},
-		{
-			name:    "non-numeric is invalid",
-			input:   "abc",
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateNonNegativeInt(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ValidateNonNegativeInt() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
 func TestFormInput_ToLogInput(t *testing.T) {
 	tests := []struct {
-		name        string
-		input       FormInput
-		wantErr     bool
-		wantTask    string
-		wantEst     float64
-		wantActual  float64
-		wantAI      int
-		wantProblem string
+		name       string
+		input      FormInput
+		wantErr    bool
+		wantTask   string
+		wantEst    float64
+		wantActual float64
+		wantMemo   string
 	}{
 		{
 			name: "valid full input",
@@ -271,17 +157,13 @@ func TestFormInput_ToLogInput(t *testing.T) {
 				TaskName:      "テストタスク",
 				EstimateHours: "2.0",
 				ActualHours:   "3.0",
-				AIMinutes:     "30",
-				Problem:       "問題",
-				Solution:      "解決",
-				Learning:      "学び",
+				Memo:          "メモ内容",
 			},
-			wantErr:     false,
-			wantTask:    "テストタスク",
-			wantEst:     2.0,
-			wantActual:  3.0,
-			wantAI:      30,
-			wantProblem: "問題",
+			wantErr:    false,
+			wantTask:   "テストタスク",
+			wantEst:    2.0,
+			wantActual: 3.0,
+			wantMemo:   "メモ内容",
 		},
 		{
 			name: "valid minimal input",
@@ -289,17 +171,13 @@ func TestFormInput_ToLogInput(t *testing.T) {
 				TaskName:      "タスク",
 				EstimateHours: "1",
 				ActualHours:   "1.5",
-				AIMinutes:     "",
-				Problem:       "",
-				Solution:      "",
-				Learning:      "",
+				Memo:          "",
 			},
-			wantErr:     false,
-			wantTask:    "タスク",
-			wantEst:     1.0,
-			wantActual:  1.5,
-			wantAI:      0,
-			wantProblem: "",
+			wantErr:    false,
+			wantTask:   "タスク",
+			wantEst:    1.0,
+			wantActual: 1.5,
+			wantMemo:   "",
 		},
 		{
 			name: "trims whitespace",
@@ -307,17 +185,13 @@ func TestFormInput_ToLogInput(t *testing.T) {
 				TaskName:      "  タスク  ",
 				EstimateHours: "  2  ",
 				ActualHours:   "  3  ",
-				AIMinutes:     "  10  ",
-				Problem:       "  問題  ",
-				Solution:      "",
-				Learning:      "",
+				Memo:          "  メモ  ",
 			},
-			wantErr:     false,
-			wantTask:    "タスク",
-			wantEst:     2.0,
-			wantActual:  3.0,
-			wantAI:      10,
-			wantProblem: "問題",
+			wantErr:    false,
+			wantTask:   "タスク",
+			wantEst:    2.0,
+			wantActual: 3.0,
+			wantMemo:   "メモ",
 		},
 		{
 			name: "invalid estimate",
@@ -325,7 +199,7 @@ func TestFormInput_ToLogInput(t *testing.T) {
 				TaskName:      "タスク",
 				EstimateHours: "abc",
 				ActualHours:   "1",
-				AIMinutes:     "",
+				Memo:          "",
 			},
 			wantErr: true,
 		},
@@ -335,17 +209,7 @@ func TestFormInput_ToLogInput(t *testing.T) {
 				TaskName:      "タスク",
 				EstimateHours: "1",
 				ActualHours:   "abc",
-				AIMinutes:     "",
-			},
-			wantErr: true,
-		},
-		{
-			name: "invalid AI minutes",
-			input: FormInput{
-				TaskName:      "タスク",
-				EstimateHours: "1",
-				ActualHours:   "1",
-				AIMinutes:     "-5",
+				Memo:          "",
 			},
 			wantErr: true,
 		},
@@ -371,11 +235,8 @@ func TestFormInput_ToLogInput(t *testing.T) {
 			if got.ActualHours != tt.wantActual {
 				t.Errorf("ActualHours = %v, want %v", got.ActualHours, tt.wantActual)
 			}
-			if got.AIMinutes != tt.wantAI {
-				t.Errorf("AIMinutes = %v, want %v", got.AIMinutes, tt.wantAI)
-			}
-			if got.Problem != tt.wantProblem {
-				t.Errorf("Problem = %q, want %q", got.Problem, tt.wantProblem)
+			if got.Memo != tt.wantMemo {
+				t.Errorf("Memo = %q, want %q", got.Memo, tt.wantMemo)
 			}
 		})
 	}

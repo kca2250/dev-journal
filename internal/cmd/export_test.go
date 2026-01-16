@@ -143,10 +143,8 @@ func TestValidateDateFormat(t *testing.T) {
 }
 
 func TestFormatCSVRow(t *testing.T) {
-	aiMinutes := 30
-	problem := "CORSエラー"
-	solution := "プロキシ設定追加"
-	learning := "API連携は早めに確認"
+	memo := "CORSでハマった"
+	tags := "新機能,フロント"
 
 	log := model.Log{
 		ID:            1,
@@ -154,16 +152,14 @@ func TestFormatCSVRow(t *testing.T) {
 		TaskName:      "ログイン実装",
 		EstimateHours: 2.0,
 		ActualHours:   3.0,
-		AIMinutes:     &aiMinutes,
-		Problem:       &problem,
-		Solution:      &solution,
-		Learning:      &learning,
+		Memo:          &memo,
+		Tags:          &tags,
 	}
 
 	row := formatCSVRow(log)
 
-	if len(row) != 8 {
-		t.Errorf("formatCSVRow() returned %d fields, want 8", len(row))
+	if len(row) != 6 {
+		t.Errorf("formatCSVRow() returned %d fields, want 6", len(row))
 	}
 
 	if row[0] != "2025-01-10" {
@@ -178,11 +174,11 @@ func TestFormatCSVRow(t *testing.T) {
 	if row[3] != "3.0" {
 		t.Errorf("actual_hours = %q, want %q", row[3], "3.0")
 	}
-	if row[4] != "30" {
-		t.Errorf("ai_minutes = %q, want %q", row[4], "30")
+	if row[4] != "CORSでハマった" {
+		t.Errorf("memo = %q, want %q", row[4], "CORSでハマった")
 	}
-	if row[5] != "CORSエラー" {
-		t.Errorf("problem = %q, want %q", row[5], "CORSエラー")
+	if row[5] != "新機能,フロント" {
+		t.Errorf("tags = %q, want %q", row[5], "新機能,フロント")
 	}
 }
 
@@ -193,25 +189,17 @@ func TestFormatCSVRow_NilFields(t *testing.T) {
 		TaskName:      "API連携",
 		EstimateHours: 1.5,
 		ActualHours:   1.5,
-		AIMinutes:     nil,
-		Problem:       nil,
-		Solution:      nil,
-		Learning:      nil,
+		Memo:          nil,
+		Tags:          nil,
 	}
 
 	row := formatCSVRow(log)
 
 	if row[4] != "" {
-		t.Errorf("ai_minutes for nil = %q, want empty string", row[4])
+		t.Errorf("memo for nil = %q, want empty string", row[4])
 	}
 	if row[5] != "" {
-		t.Errorf("problem for nil = %q, want empty string", row[5])
-	}
-	if row[6] != "" {
-		t.Errorf("solution for nil = %q, want empty string", row[6])
-	}
-	if row[7] != "" {
-		t.Errorf("learning for nil = %q, want empty string", row[7])
+		t.Errorf("tags for nil = %q, want empty string", row[5])
 	}
 }
 
@@ -223,10 +211,8 @@ func TestGetCSVHeaders(t *testing.T) {
 		"task_name",
 		"estimate_hours",
 		"actual_hours",
-		"ai_minutes",
-		"problem",
-		"solution",
-		"learning",
+		"memo",
+		"tags",
 	}
 
 	if len(headers) != len(expected) {

@@ -56,7 +56,7 @@ func TestErrExclusiveOptions(t *testing.T) {
 
 func TestRenderLogTable(t *testing.T) {
 	// Create test logs
-	aiMinutes := 30
+	memo := "CORSでハマった"
 	logs := []model.Log{
 		{
 			ID:            1,
@@ -64,7 +64,7 @@ func TestRenderLogTable(t *testing.T) {
 			TaskName:      "ログイン実装",
 			EstimateHours: 2.0,
 			ActualHours:   3.0,
-			AIMinutes:     &aiMinutes,
+			Memo:          &memo,
 		},
 		{
 			ID:            2,
@@ -72,7 +72,7 @@ func TestRenderLogTable(t *testing.T) {
 			TaskName:      "API連携",
 			EstimateHours: 1.5,
 			ActualHours:   1.5,
-			AIMinutes:     nil,
+			Memo:          nil,
 		},
 	}
 
@@ -87,7 +87,6 @@ func TestRenderLogTable(t *testing.T) {
 		localizer.Get(ui.MsgHeaderTask),
 		localizer.Get(ui.MsgHeaderEstimate),
 		localizer.Get(ui.MsgHeaderActual),
-		localizer.Get(ui.MsgHeaderAI),
 	}
 
 	rows := make([][]string, len(logs))
@@ -97,7 +96,6 @@ func TestRenderLogTable(t *testing.T) {
 			ui.TruncateString(log.TaskName, 20),
 			ui.FormatHours(log.EstimateHours),
 			ui.FormatHours(log.ActualHours),
-			ui.FormatAIMinutes(log.AIMinutes),
 		}
 	}
 
@@ -113,12 +111,6 @@ func TestRenderLogTable(t *testing.T) {
 	}
 	if !bytes.Contains([]byte(output), []byte("2.0h")) {
 		t.Error("output should contain '2.0h'")
-	}
-	if !bytes.Contains([]byte(output), []byte("30min")) {
-		t.Error("output should contain '30min'")
-	}
-	if !bytes.Contains([]byte(output), []byte("-")) {
-		t.Error("output should contain '-' for nil AI minutes")
 	}
 }
 
@@ -143,7 +135,6 @@ func TestRenderLogTable_LongTaskName(t *testing.T) {
 			ui.TruncateString(log.TaskName, 20),
 			ui.FormatHours(log.EstimateHours),
 			ui.FormatHours(log.ActualHours),
-			ui.FormatAIMinutes(log.AIMinutes),
 		}
 	}
 
@@ -152,7 +143,6 @@ func TestRenderLogTable_LongTaskName(t *testing.T) {
 		localizer.Get(ui.MsgHeaderTask),
 		localizer.Get(ui.MsgHeaderEstimate),
 		localizer.Get(ui.MsgHeaderActual),
-		localizer.Get(ui.MsgHeaderAI),
 	}
 
 	ui.RenderTable(&buf, headers, rows)

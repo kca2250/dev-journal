@@ -73,39 +73,6 @@ func TestRenderTable_ContainsData(t *testing.T) {
 	}
 }
 
-func TestFormatAIMinutes(t *testing.T) {
-	tests := []struct {
-		name     string
-		minutes  *int
-		expected string
-	}{
-		{
-			name:     "nil returns dash",
-			minutes:  nil,
-			expected: "-",
-		},
-		{
-			name:     "zero returns dash",
-			minutes:  intPtr(0),
-			expected: "-",
-		},
-		{
-			name:     "positive value returns Xmin",
-			minutes:  intPtr(30),
-			expected: "30min",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := FormatAIMinutes(tt.minutes)
-			if result != tt.expected {
-				t.Errorf("FormatAIMinutes() = %q, want %q", result, tt.expected)
-			}
-		})
-	}
-}
-
 func TestFormatHours(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -180,8 +147,4 @@ func TestTruncateString(t *testing.T) {
 			}
 		})
 	}
-}
-
-func intPtr(i int) *int {
-	return &i
 }

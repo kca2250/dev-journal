@@ -157,33 +157,21 @@ func getCSVHeaders() []string {
 		"task_name",
 		"estimate_hours",
 		"actual_hours",
-		"ai_minutes",
-		"problem",
-		"solution",
-		"learning",
+		"memo",
+		"tags",
 	}
 }
 
 // formatCSVRow formats a log entry as a CSV row
 func formatCSVRow(log model.Log) []string {
-	aiMinutes := ""
-	if log.AIMinutes != nil {
-		aiMinutes = fmt.Sprintf("%d", *log.AIMinutes)
+	memo := ""
+	if log.Memo != nil {
+		memo = *log.Memo
 	}
 
-	problem := ""
-	if log.Problem != nil {
-		problem = *log.Problem
-	}
-
-	solution := ""
-	if log.Solution != nil {
-		solution = *log.Solution
-	}
-
-	learning := ""
-	if log.Learning != nil {
-		learning = *log.Learning
+	tags := ""
+	if log.Tags != nil {
+		tags = *log.Tags
 	}
 
 	return []string{
@@ -191,10 +179,8 @@ func formatCSVRow(log model.Log) []string {
 		log.TaskName,
 		fmt.Sprintf("%.1f", log.EstimateHours),
 		fmt.Sprintf("%.1f", log.ActualHours),
-		aiMinutes,
-		problem,
-		solution,
-		learning,
+		memo,
+		tags,
 	}
 }
 

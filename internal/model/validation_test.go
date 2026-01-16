@@ -17,10 +17,7 @@ func TestValidateInput(t *testing.T) {
 				TaskName:      "テストタスク",
 				EstimateHours: 2.0,
 				ActualHours:   3.0,
-				AIMinutes:     30,
-				Problem:       "問題",
-				Solution:      "解決",
-				Learning:      "学び",
+				Memo:          "メモ内容",
 			},
 			wantErr: nil,
 		},
@@ -86,26 +83,6 @@ func TestValidateInput(t *testing.T) {
 				ActualHours:   -1.0,
 			},
 			wantErr: ErrInvalidActual,
-		},
-		{
-			name: "negative AI minutes",
-			input: LogInput{
-				TaskName:      "タスク",
-				EstimateHours: 1.0,
-				ActualHours:   1.0,
-				AIMinutes:     -10,
-			},
-			wantErr: ErrInvalidAIMinutes,
-		},
-		{
-			name: "zero AI minutes is valid",
-			input: LogInput{
-				TaskName:      "タスク",
-				EstimateHours: 1.0,
-				ActualHours:   1.0,
-				AIMinutes:     0,
-			},
-			wantErr: nil,
 		},
 	}
 
