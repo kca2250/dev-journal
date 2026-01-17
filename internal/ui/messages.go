@@ -59,6 +59,19 @@ const (
 	MsgHeaderMonth    = "header_month"
 	MsgHeaderCount    = "header_count"
 
+	// Interactive list messages
+	MsgSelectLog       = "select_log"
+	MsgActionEdit      = "action_edit"
+	MsgActionDelete    = "action_delete"
+	MsgActionCancel    = "action_cancel"
+	MsgSelectAction    = "select_action"
+	MsgDeleteConfirm   = "delete_confirm"
+	MsgDeleteSuccess   = "delete_success"
+	MsgEditSuccess     = "edit_success"
+	MsgDeleteCancelled = "delete_cancelled"
+	MsgEditCancelled   = "edit_cancelled"
+	MsgExitInteractive = "exit_interactive"
+
 	// Common messages
 	MsgError       = "error"
 	MsgConfirmExit = "confirm_exit"
@@ -124,6 +137,19 @@ var messages = map[string]map[string]string{
 		MsgHeaderMonth:    "月",
 		MsgHeaderCount:    "件数",
 
+		// Interactive list messages
+		MsgSelectLog:       "ログを選択",
+		MsgActionEdit:      "編集",
+		MsgActionDelete:    "削除",
+		MsgActionCancel:    "キャンセル",
+		MsgSelectAction:    "アクションを選択",
+		MsgDeleteConfirm:   "このログを削除しますか？",
+		MsgDeleteSuccess:   "ログを削除しました",
+		MsgEditSuccess:     "ログを更新しました",
+		MsgDeleteCancelled: "削除をキャンセルしました",
+		MsgEditCancelled:   "編集をキャンセルしました",
+		MsgExitInteractive: "終了",
+
 		// Common messages
 		MsgError:       "エラー: %s",
 		MsgConfirmExit: "終了しますか？ (y/N)",
@@ -185,6 +211,19 @@ var messages = map[string]map[string]string{
 		MsgHeaderMemo:     "Memo",
 		MsgHeaderMonth:    "Month",
 		MsgHeaderCount:    "Count",
+
+		// Interactive list messages
+		MsgSelectLog:       "Select log",
+		MsgActionEdit:      "Edit",
+		MsgActionDelete:    "Delete",
+		MsgActionCancel:    "Cancel",
+		MsgSelectAction:    "Select action",
+		MsgDeleteConfirm:   "Delete this log?",
+		MsgDeleteSuccess:   "Log deleted",
+		MsgEditSuccess:     "Log updated",
+		MsgDeleteCancelled: "Delete cancelled",
+		MsgEditCancelled:   "Edit cancelled",
+		MsgExitInteractive: "Exit",
 
 		// Common messages
 		MsgError:       "Error: %s",
