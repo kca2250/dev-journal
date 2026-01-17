@@ -340,6 +340,65 @@ func (r *LogRepository) Export(ctx context.Context, from, to *time.Time) ([]mode
 	return scanLogs(rows)
 }
 
+// Update updates an existing log entry
+func (r *LogRepository) Update(ctx context.Context, id int64, input *model.LogInput) error {
+	query := `
+		UPDATE logs
+		SET task_name = ?, estimate_hours = ?, actual_hours = ?, memo = ?, tags = ?
+		WHERE id = ?
+	`
+
+	var memo, tags *string
+	if input.Memo != "" {
+		memo = &input.Memo
+	}
+	if input.Tags != "" {
+		tags = &input.Tags
+	}
+
+	result, err := r.db.ExecContext(ctx, query,
+		input.TaskName,
+		input.EstimateHours,
+		input.ActualHours,
+		memo,
+		tags,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update log: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("log not found: %d", id)
+	}
+
+	return nil
+}
+
+// Delete deletes a log entry by ID
+func (r *LogRepository) Delete(ctx context.Context, id int64) error {
+	query := `DELETE FROM logs WHERE id = ?`
+
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete log: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("log not found: %d", id)
+	}
+
+	return nil
+}
+
 // scanLogs scans rows into Log structs
 func scanLogs(rows *sql.Rows) ([]model.Log, error) {
 	var logs []model.Log

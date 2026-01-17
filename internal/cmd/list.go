@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	listWeek  bool
-	listMonth bool
-	listLimit int
+	listWeek          bool
+	listMonth         bool
+	listLimit         int
+	listNoInteractive bool
 )
 
 var listCmd = &cobra.Command{
@@ -29,6 +30,7 @@ func init() {
 	listCmd.Flags().BoolVarP(&listWeek, "week", "w", false, "今週の記録を表示")
 	listCmd.Flags().BoolVarP(&listMonth, "month", "m", false, "今月の記録を表示")
 	listCmd.Flags().IntVarP(&listLimit, "limit", "l", 10, "表示件数を指定")
+	listCmd.Flags().BoolVar(&listNoInteractive, "no-interactive", false, "インタラクティブモードを無効化")
 	rootCmd.AddCommand(listCmd)
 }
 
@@ -64,22 +66,107 @@ func runList(cmd *cobra.Command, args []string) error {
 		opts.Month = "current"
 	}
 
-	// Fetch logs
 	ctx := context.Background()
-	logs, err := repo.List(ctx, opts)
-	if err != nil {
-		return fmt.Errorf("%s", localizer.Getf(ui.MsgError, err.Error()))
-	}
 
-	// Check if no logs found
-	if len(logs) == 0 {
-		fmt.Println(localizer.Get(ui.MsgNoLogs))
+	// Non-interactive mode: just show the table
+	if listNoInteractive {
+		logs, err := repo.List(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("%s", localizer.Getf(ui.MsgError, err.Error()))
+		}
+		if len(logs) == 0 {
+			fmt.Println(localizer.Get(ui.MsgNoLogs))
+			return nil
+		}
+		renderLogTable(os.Stdout, logs, localizer)
 		return nil
 	}
 
-	// Render table
-	renderLogTable(os.Stdout, logs, localizer)
+	// Interactive mode: loop until user exits
+	return runInteractiveList(ctx, repo, opts, localizer)
+}
 
+func runInteractiveList(ctx context.Context, repo *db.LogRepository, opts db.ListOptions, localizer *ui.Localizer) error {
+	for {
+		// Fetch logs
+		logs, err := repo.List(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("%s", localizer.Getf(ui.MsgError, err.Error()))
+		}
+
+		if len(logs) == 0 {
+			fmt.Println(localizer.Get(ui.MsgNoLogs))
+			return nil
+		}
+
+		// Show log selector
+		selector := ui.NewLogSelector(localizer, logs)
+		selectedLog, err := selector.Run()
+		if err != nil {
+			return err
+		}
+
+		// User selected exit
+		if selectedLog == nil {
+			return nil
+		}
+
+		// Show action selector
+		actionSelector := ui.NewActionSelector(localizer, *selectedLog)
+		action, err := actionSelector.Run()
+		if err != nil {
+			return err
+		}
+
+		switch action {
+		case ui.ActionEdit:
+			if err := handleEdit(ctx, repo, *selectedLog, localizer); err != nil {
+				if errors.Is(err, ui.ErrFormCancelled) {
+					fmt.Println(localizer.Get(ui.MsgEditCancelled))
+					continue
+				}
+				return err
+			}
+			fmt.Println(localizer.Get(ui.MsgEditSuccess))
+
+		case ui.ActionDelete:
+			if err := handleDelete(ctx, repo, *selectedLog, localizer); err != nil {
+				return err
+			}
+
+		case ui.ActionCancel:
+			// Continue to next iteration
+		}
+	}
+}
+
+func handleEdit(ctx context.Context, repo *db.LogRepository, log model.Log, localizer *ui.Localizer) error {
+	editForm := ui.NewEditForm(localizer, log)
+	input, err := editForm.Run()
+	if err != nil {
+		return err
+	}
+
+	return repo.Update(ctx, log.ID, input)
+}
+
+func handleDelete(ctx context.Context, repo *db.LogRepository, log model.Log, localizer *ui.Localizer) error {
+	confirm := ui.NewDeleteConfirm(localizer, log)
+	confirmed, err := confirm.Run()
+	if err != nil {
+		return err
+	}
+
+	if !confirmed {
+		fmt.Println(localizer.Get(ui.MsgDeleteCancelled))
+		return nil
+	}
+
+	if err := repo.Delete(ctx, log.ID); err != nil {
+		return err
+	}
+
+	fmt.Println(localizer.Get(ui.MsgDeleteSuccess))
 	return nil
 }
 

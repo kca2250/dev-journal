@@ -5,12 +5,20 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/huh"
 	"github.com/kca2250/djou/internal/model"
 )
 
 // ErrFormCancelled is returned when the user cancels the form
 var ErrFormCancelled = errors.New("form cancelled")
+
+// NewKeyMapWithEsc creates a KeyMap that includes Escape key for quitting
+func NewKeyMapWithEsc() *huh.KeyMap {
+	km := huh.NewDefaultKeyMap()
+	km.Quit = key.NewBinding(key.WithKeys("ctrl+c", "esc"))
+	return km
+}
 
 // FormInput holds the raw string input from the form
 type FormInput struct {
@@ -121,7 +129,7 @@ func (r *RecordForm) Run() (*model.LogInput, error) {
 				Title(l.Get(MsgMemoLabel)).
 				Value(&r.input.Memo),
 		),
-	)
+	).WithKeyMap(NewKeyMapWithEsc())
 
 	err := form.Run()
 	if err != nil {
