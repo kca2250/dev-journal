@@ -369,6 +369,34 @@ func (r *LogRepository) Export(ctx context.Context, from, to *time.Time) ([]mode
 	return scanLogs(rows)
 }
 
+// GetById retrieves a log entry by ID
+func (r *LogRepository) GetById(ctx context.Context, id int64) (*model.Log, error) {
+	query := `
+		SELECT id, created_at, task_name, estimate_hours, actual_hours, memo, tags
+		FROM logs
+		WHERE id = ?
+	`
+
+	var log model.Log
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&log.ID,
+		&log.CreatedAt,
+		&log.TaskName,
+		&log.EstimateHours,
+		&log.ActualHours,
+		&log.Memo,
+		&log.Tags,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("log not found: %d", id)
+		}
+		return nil, fmt.Errorf("failed to get log: %w", err)
+	}
+
+	return &log, nil
+}
+
 // Update updates an existing log entry
 func (r *LogRepository) Update(ctx context.Context, id int64, input *model.LogInput) error {
 	query := `
