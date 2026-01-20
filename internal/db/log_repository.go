@@ -15,6 +15,7 @@ type ListOptions struct {
 	Limit int
 	Week  bool
 	Month string // empty for current month, or "YYYY-MM" for specific month
+	Tag   string // tag filter
 }
 
 // GetLimit returns the limit or default value
@@ -126,6 +127,12 @@ func (r *LogRepository) List(ctx context.Context, opts ListOptions) ([]model.Log
 
 		whereClauses = append(whereClauses, "created_at >= ? AND created_at < ?")
 		args = append(args, startOfMonth, endOfMonth)
+	}
+
+	// Tag filter
+	if opts.Tag != "" {
+		whereClauses = append(whereClauses, "tags LIKE ?")
+		args = append(args, "%"+opts.Tag+"%")
 	}
 
 	if len(whereClauses) > 0 {

@@ -181,6 +181,9 @@ func NewEditForm(l *Localizer, log model.Log) *EditForm {
 	if log.Memo != nil {
 		input.Memo = *log.Memo
 	}
+	if log.Tags != nil {
+		input.Tags = *log.Tags
+	}
 
 	return &EditForm{
 		localizer: l,
@@ -213,6 +216,11 @@ func (e *EditForm) Run() (*model.LogInput, error) {
 			huh.NewText().
 				Title(l.Get(MsgMemoLabel)).
 				Value(&e.input.Memo),
+
+			huh.NewInput().
+				Title(l.Get(MsgTagsLabel)).
+				Description(l.Get(MsgTagsHint)).
+				Value(&e.input.Tags),
 		),
 	).WithKeyMap(NewKeyMapWithEsc())
 
