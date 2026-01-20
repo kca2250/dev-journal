@@ -2,6 +2,8 @@ package mcp
 
 import (
 	"testing"
+
+	"github.com/kca2250/djou/internal/version"
 )
 
 func TestNewServer(t *testing.T) {
@@ -33,7 +35,9 @@ func TestServerConstants(t *testing.T) {
 	if ServerName != "djou" {
 		t.Errorf("ServerName = %q, want %q", ServerName, "djou")
 	}
-	if ServerVersion != "1.0.0" {
-		t.Errorf("ServerVersion = %q, want %q", ServerVersion, "1.0.0")
+	// Version should be set via ldflags or default to "dev"
+	v := version.GetVersion()
+	if v == "" {
+		t.Error("version.GetVersion() returned empty string")
 	}
 }

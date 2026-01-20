@@ -1,19 +1,19 @@
 package mcp
 
 import (
+	"github.com/kca2250/djou/internal/version"
 	"github.com/mark3labs/mcp-go/server"
 )
 
 const (
-	ServerName    = "djou"
-	ServerVersion = "1.0.0"
+	ServerName = "djou"
 )
 
 // NewServer creates a new MCP server with all djou tools registered
 func NewServer() *server.MCPServer {
 	s := server.NewMCPServer(
 		ServerName,
-		ServerVersion,
+		version.GetVersion(),
 		server.WithToolCapabilities(false),
 	)
 
