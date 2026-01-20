@@ -17,6 +17,7 @@ var (
 	listMonth         bool
 	listLimit         int
 	listNoInteractive bool
+	listTag           string
 )
 
 var listCmd = &cobra.Command{
@@ -31,6 +32,7 @@ func init() {
 	listCmd.Flags().BoolVarP(&listMonth, "month", "m", false, "今月の記録を表示")
 	listCmd.Flags().IntVarP(&listLimit, "limit", "l", 10, "表示件数を指定")
 	listCmd.Flags().BoolVar(&listNoInteractive, "no-interactive", false, "インタラクティブモードを無効化")
+	listCmd.Flags().StringVar(&listTag, "tag", "", "タグでフィルタリング")
 	rootCmd.AddCommand(listCmd)
 }
 
@@ -61,6 +63,7 @@ func runList(cmd *cobra.Command, args []string) error {
 	opts := db.ListOptions{
 		Limit: listLimit,
 		Week:  listWeek,
+		Tag:   listTag,
 	}
 	if listMonth {
 		opts.Month = "current"

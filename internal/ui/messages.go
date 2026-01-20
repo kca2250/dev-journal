@@ -56,8 +56,13 @@ const (
 	MsgHeaderEstimate = "header_estimate"
 	MsgHeaderActual   = "header_actual"
 	MsgHeaderMemo     = "header_memo"
+	MsgHeaderTags     = "header_tags"
 	MsgHeaderMonth    = "header_month"
 	MsgHeaderCount    = "header_count"
+
+	// Tag-related messages
+	MsgTagsLabel = "tags_label"
+	MsgTagsHint  = "tags_hint"
 
 	// Interactive list messages
 	MsgSelectLog       = "select_log"
@@ -134,8 +139,13 @@ var messages = map[string]map[string]string{
 		MsgHeaderEstimate: "見積",
 		MsgHeaderActual:   "実績",
 		MsgHeaderMemo:     "メモ",
+		MsgHeaderTags:     "タグ",
 		MsgHeaderMonth:    "月",
 		MsgHeaderCount:    "件数",
+
+		// Tag-related messages
+		MsgTagsLabel: "タグ",
+		MsgTagsHint:  "カンマ区切りで入力 (例: task_type:新機能, project:案件A)",
 
 		// Interactive list messages
 		MsgSelectLog:       "ログを選択",
@@ -209,8 +219,13 @@ var messages = map[string]map[string]string{
 		MsgHeaderEstimate: "Est",
 		MsgHeaderActual:   "Act",
 		MsgHeaderMemo:     "Memo",
+		MsgHeaderTags:     "Tags",
 		MsgHeaderMonth:    "Month",
 		MsgHeaderCount:    "Count",
+
+		// Tag-related messages
+		MsgTagsLabel: "Tags",
+		MsgTagsHint:  "Comma-separated (e.g., task_type:feature, project:A)",
 
 		// Interactive list messages
 		MsgSelectLog:       "Select log",

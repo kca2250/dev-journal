@@ -26,6 +26,7 @@ type FormInput struct {
 	EstimateHours string
 	ActualHours   string
 	Memo          string
+	Tags          string
 }
 
 // ToLogInput converts FormInput to model.LogInput
@@ -45,6 +46,7 @@ func (f *FormInput) ToLogInput() (*model.LogInput, error) {
 		EstimateHours: estimate,
 		ActualHours:   actual,
 		Memo:          strings.TrimSpace(f.Memo),
+		Tags:          strings.TrimSpace(f.Tags),
 	}, nil
 }
 
@@ -128,6 +130,11 @@ func (r *RecordForm) Run() (*model.LogInput, error) {
 			huh.NewText().
 				Title(l.Get(MsgMemoLabel)).
 				Value(&r.input.Memo),
+
+			huh.NewInput().
+				Title(l.Get(MsgTagsLabel)).
+				Description(l.Get(MsgTagsHint)).
+				Value(&r.input.Tags),
 		),
 	).WithKeyMap(NewKeyMapWithEsc())
 
