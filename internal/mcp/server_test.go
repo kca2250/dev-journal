@@ -10,7 +10,7 @@ func TestNewServer(t *testing.T) {
 		t.Fatal("NewServer() returned nil")
 	}
 
-	// Check that all 5 tools are registered
+	// Check that all 7 tools are registered
 	tools := s.ListTools()
 	expectedTools := []string{
 		"djou_record",
@@ -18,6 +18,8 @@ func TestNewServer(t *testing.T) {
 		"djou_search",
 		"djou_stats",
 		"djou_export",
+		"djou_update",
+		"djou_delete",
 	}
 
 	for _, name := range expectedTools {

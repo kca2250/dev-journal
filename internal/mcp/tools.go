@@ -501,3 +501,132 @@ func escapeCSV(s string) string {
 	}
 	return s
 }
+
+// registerUpdateTool registers the djou_update tool
+func registerUpdateTool(s *server.MCPServer) {
+	tool := mcp.NewTool("djou_update",
+		mcp.WithDescription("開発日誌を更新する"),
+		mcp.WithNumber("id",
+			mcp.Required(),
+			mcp.Description("更新対象のログID"),
+		),
+		mcp.WithString("task_name",
+			mcp.Description("タスク名（指定しない場合は現在の値を維持）"),
+		),
+		mcp.WithNumber("estimate_hours",
+			mcp.Description("見積もり時間（指定しない場合は現在の値を維持）"),
+		),
+		mcp.WithNumber("actual_hours",
+			mcp.Description("実績時間（指定しない場合は現在の値を維持）"),
+		),
+		mcp.WithString("memo",
+			mcp.Description("メモ（指定しない場合は現在の値を維持）"),
+		),
+		mcp.WithString("tags",
+			mcp.Description("タグ（指定しない場合は現在の値を維持）"),
+		),
+	)
+
+	s.AddTool(tool, handleUpdate)
+}
+
+func handleUpdate(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Parse ID (required)
+	id, err := request.RequireInt("id")
+	if err != nil {
+		return mcp.NewToolResultError("id は必須です"), nil
+	}
+
+	// Open database
+	database, err := db.Open()
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("データベース接続エラー: %s", err.Error())), nil
+	}
+	defer database.Close()
+
+	repo := db.NewLogRepository(database)
+
+	// Get existing log
+	existingLog, err := repo.GetById(ctx, int64(id))
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("ログが見つかりません: %s", err.Error())), nil
+	}
+
+	// Build input with partial updates
+	input := model.LogInput{
+		TaskName:      existingLog.TaskName,
+		EstimateHours: existingLog.EstimateHours,
+		ActualHours:   existingLog.ActualHours,
+	}
+	if existingLog.Memo != nil {
+		input.Memo = *existingLog.Memo
+	}
+	if existingLog.Tags != nil {
+		input.Tags = *existingLog.Tags
+	}
+
+	// Override with provided values
+	if taskName := request.GetString("task_name", ""); taskName != "" {
+		input.TaskName = taskName
+	}
+	// Note: GetFloat returns 0 as default, so we can't distinguish between "not provided" and "provided as 0"
+	// For hours, 0 is not a valid value anyway, so we treat it as "not provided"
+	if estimateHours := request.GetFloat("estimate_hours", 0); estimateHours > 0 {
+		input.EstimateHours = estimateHours
+	}
+	if actualHours := request.GetFloat("actual_hours", 0); actualHours > 0 {
+		input.ActualHours = actualHours
+	}
+	// For memo and tags, empty string means "clear the field" vs not provided
+	// We use a sentinel value approach: if user provides empty string, it will be set
+	if memo := request.GetString("memo", "\x00"); memo != "\x00" {
+		input.Memo = memo
+	}
+	if tags := request.GetString("tags", "\x00"); tags != "\x00" {
+		input.Tags = tags
+	}
+
+	// Update
+	if err := repo.Update(ctx, int64(id), &input); err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("更新エラー: %s", err.Error())), nil
+	}
+
+	return mcp.NewToolResultText(fmt.Sprintf("✅ ID %d を更新しました", id)), nil
+}
+
+// registerDeleteTool registers the djou_delete tool
+func registerDeleteTool(s *server.MCPServer) {
+	tool := mcp.NewTool("djou_delete",
+		mcp.WithDescription("開発日誌を削除する"),
+		mcp.WithNumber("id",
+			mcp.Required(),
+			mcp.Description("削除対象のログID"),
+		),
+	)
+
+	s.AddTool(tool, handleDelete)
+}
+
+func handleDelete(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Parse ID (required)
+	id, err := request.RequireInt("id")
+	if err != nil {
+		return mcp.NewToolResultError("id は必須です"), nil
+	}
+
+	// Open database
+	database, err := db.Open()
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("データベース接続エラー: %s", err.Error())), nil
+	}
+	defer database.Close()
+
+	repo := db.NewLogRepository(database)
+
+	// Delete
+	if err := repo.Delete(ctx, int64(id)); err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("削除エラー: %s", err.Error())), nil
+	}
+
+	return mcp.NewToolResultText(fmt.Sprintf("✅ ID %d を削除しました", id)), nil
+}

@@ -23,6 +23,8 @@ func NewServer() *server.MCPServer {
 	registerSearchTool(s)
 	registerStatsTool(s)
 	registerExportTool(s)
+	registerUpdateTool(s)
+	registerDeleteTool(s)
 
 	return s
 }
