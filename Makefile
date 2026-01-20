@@ -1,4 +1,4 @@
-.PHONY: build test lint fmt ci clean coverage
+.PHONY: build test lint fmt ci clean coverage release-dry
 
 # ビルド
 build:
@@ -43,3 +43,7 @@ clean:
 # 開発用ビルド
 dev:
 	go build -o djou ./cmd/djou
+
+# リリース確認（ドライラン）
+release-dry:
+	goreleaser release --snapshot --clean
