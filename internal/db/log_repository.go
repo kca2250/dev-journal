@@ -18,6 +18,13 @@ type ListOptions struct {
 	Tag   string // tag filter
 }
 
+// SearchOptions represents options for searching logs
+type SearchOptions struct {
+	Keywords []string
+	Limit    int
+	Tag      string // tag filter
+}
+
 // GetLimit returns the limit or default value
 func (o ListOptions) GetLimit() int {
 	if o.Limit <= 0 {
@@ -153,7 +160,15 @@ func (r *LogRepository) List(ctx context.Context, opts ListOptions) ([]model.Log
 
 // Search searches logs by keywords (AND search)
 func (r *LogRepository) Search(ctx context.Context, keywords []string, limit int) ([]model.Log, error) {
-	if len(keywords) == 0 {
+	return r.SearchWithOptions(ctx, SearchOptions{
+		Keywords: keywords,
+		Limit:    limit,
+	})
+}
+
+// SearchWithOptions searches logs by keywords with additional options
+func (r *LogRepository) SearchWithOptions(ctx context.Context, opts SearchOptions) ([]model.Log, error) {
+	if len(opts.Keywords) == 0 {
 		return []model.Log{}, nil
 	}
 
@@ -165,19 +180,26 @@ func (r *LogRepository) Search(ctx context.Context, keywords []string, limit int
 	args := []any{}
 
 	// AND search: all keywords must match in any field
-	for _, keyword := range keywords {
+	for _, keyword := range opts.Keywords {
 		query += ` AND (
 			task_name LIKE ? OR
-			memo LIKE ?
+			memo LIKE ? OR
+			tags LIKE ?
 		)`
 		pattern := "%" + keyword + "%"
-		args = append(args, pattern, pattern)
+		args = append(args, pattern, pattern, pattern)
+	}
+
+	// Tag filter
+	if opts.Tag != "" {
+		query += " AND tags LIKE ?"
+		args = append(args, "%"+opts.Tag+"%")
 	}
 
 	query += " ORDER BY created_at DESC, id DESC"
 
-	if limit > 0 {
-		query += fmt.Sprintf(" LIMIT %d", limit)
+	if opts.Limit > 0 {
+		query += fmt.Sprintf(" LIMIT %d", opts.Limit)
 	}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
