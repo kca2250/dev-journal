@@ -11,6 +11,12 @@ Set Framerate 30
 Set Theme "Dracula"
 Set Padding 20
 
+# Set language to English
+Type "djou config set language en"
+Sleep 500ms
+Enter
+Sleep 1s
+
 # Title
 Type "# djou - Dev Journal CLI"
 Enter
