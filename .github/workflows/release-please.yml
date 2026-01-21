@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   release-please:
+    # PRイベントでは実行しない（mainへの直接pushのみ）
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
