@@ -59,3 +59,18 @@ release:
   draft: false
   prerelease: auto
   name_template: "v{{.Version}}"
+
+brews:
+  - name: djou
+    repository:
+      owner: kca2250
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/kca2250/dev-journal"
+    description: "CLI tool for managing development journals"
+    license: "MIT"
+    install: |
+      bin.install "djou"
+    test: |
+      system "#{bin}/djou", "version"

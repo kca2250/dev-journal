@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/kca2250/dev-journal/compare/v0.1.1...v0.1.2) (2026-01-21)
+
+
+### Features
+
+* release-please と GoReleaser を連携 ([61d353f](https://github.com/kca2250/dev-journal/commit/61d353f413dc1fa5b4179d126d377ab049733174))
+* release-please と GoReleaser を連携 ([4d813bd](https://github.com/kca2250/dev-journal/commit/4d813bd42ecb7b1849eea7631896c25ca7a0035f))
+
 ## [0.1.1](https://github.com/kca2250/dev-journal/compare/v0.1.0...v0.1.1) (2026-01-21)
 
 
