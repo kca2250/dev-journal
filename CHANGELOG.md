@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/kca2250/dev-journal/compare/v0.1.2...v0.1.3) (2026-01-21)
+
+
+### Features
+
+* Homebrew tap 連携を追加 ([2daa687](https://github.com/kca2250/dev-journal/commit/2daa6875b780211bef3f911e4b95e6a0c58c6170))
+* Homebrew tap 連携を追加 ([15ce911](https://github.com/kca2250/dev-journal/commit/15ce911fce966c8fbc5f881eaa4fc413cf42b215))
+
 ## [0.1.2](https://github.com/kca2250/dev-journal/compare/v0.1.1...v0.1.2) (2026-01-21)
 
 
