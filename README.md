@@ -150,16 +150,91 @@ djou export --output ./reports
 
 djou includes an MCP (Model Context Protocol) server for AI assistant integration.
 
-```bash
-djou mcp
+### Supported Tools
+
+| Tool | Support |
+|------|---------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | ✅ |
+| [Claude Desktop](https://claude.ai/download) | ✅ |
+| [Cursor](https://cursor.sh/) | ✅ |
+| [Cline](https://github.com/cline/cline) | ✅ |
+
+### Setup
+
+#### Claude Code
+
+Add to `~/.claude/claude_code_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
-### Available Tools
+#### Claude Desktop
 
-- `create_record` - Create a new journal entry
-- `get_records` - Get journal entries
-- `update_record` - Update an entry
-- `delete_record` - Delete an entry
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### Cursor
+
+Add to Cursor Settings → MCP → Add Server:
+
+```json
+{
+  "djou": {
+    "command": "djou",
+    "args": ["mcp"]
+  }
+}
+```
+
+#### Cline (VS Code)
+
+Add to Cline MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `create_record` | Create a new journal entry |
+| `get_records` | Get journal entries with filters |
+| `update_record` | Update an existing entry |
+| `delete_record` | Delete an entry |
+
+### Usage Example
+
+Once configured, you can ask your AI assistant:
+
+- "Record that I worked on the login feature for 2 hours"
+- "Show my journal entries from this week"
+- "What did I learn yesterday?"
 
 ## Configuration
 
