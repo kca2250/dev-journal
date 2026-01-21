@@ -240,21 +240,35 @@ Once configured, you can ask your AI assistant:
 
 ## Configuration
 
+### Initialize Config
+
 ```bash
+# Create config file
+djou config init
+
 # Show current config
-djou config
+djou config show
 
-# Set default export directory
-djou config set export.default_dir ~/Documents/djou
-
-# Set language (en/ja)
-djou config set language en
+# Edit config file
+djou config edit
 ```
 
 ### Config File Location
 
 ```
 ~/.djou/config.yaml
+```
+
+### Language
+
+Language is automatically detected from the `LANG` environment variable.
+
+```bash
+# Use English
+LANG=en_US.UTF-8 djou list
+
+# Use Japanese
+LANG=ja_JP.UTF-8 djou list
 ```
 
 ## Data Storage

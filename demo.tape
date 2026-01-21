@@ -11,11 +11,16 @@ Set Framerate 30
 Set Theme "Dracula"
 Set Padding 20
 
-# Set language to English
-Type "djou config set language en"
-Sleep 500ms
+# Use temporary directory for clean demo data
+Env HOME "/tmp/djou-demo"
+Env LANG "en_US.UTF-8"
+
+# Setup (hidden)
+Hide
+Type "mkdir -p /tmp/djou-demo"
 Enter
-Sleep 1s
+Sleep 500ms
+Show
 
 # Title
 Type "# djou - Dev Journal CLI"
