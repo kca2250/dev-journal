@@ -7,6 +7,8 @@
 
 A CLI tool for recording and managing your development journal.
 
+![Demo](docs/demo.gif)
+
 ## Overview
 
 djou helps you track your daily development work by recording both quantitative data (work time, AI usage time) and qualitative data (learnings, blockers).
