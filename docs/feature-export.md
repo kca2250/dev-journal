@@ -31,6 +31,9 @@ djou export --from 2025-01-01 --to 2025-01-31  # 期間を指定
 
 - `--output` オプションで出力先ディレクトリを指定可能
 - デフォルトはカレントディレクトリ
+- 設定ファイル（`~/.djou/config.yaml`）の `export.output_dir` でデフォルト出力先を変更可能
+- 環境変数 `DJOU_EXPORT_DIR` でもオーバーライド可能
+- 優先順位: `--output` フラグ > 環境変数 > 設定ファイル > カレントディレクトリ
 
 ### FR-4: CSVフォーマット
 
@@ -40,10 +43,8 @@ djou export --from 2025-01-01 --to 2025-01-31  # 期間を指定
 | task_name | タスク名 |
 | estimate_hours | 見積もり時間 |
 | actual_hours | 実績時間 |
-| ai_minutes | AI活用時間（分） |
-| problem | ハマったこと |
-| solution | 解決方法 |
-| learning | 学び |
+| memo | メモ |
+| tags | タグ |
 
 ### FR-5: 文字コード
 
@@ -69,10 +70,10 @@ $ djou export --output ./reports
 ### CSV内容
 
 ```csv
-date,task_name,estimate_hours,actual_hours,ai_minutes,problem,solution,learning
-2025-01-10,ログイン画面実装,2.0,3.0,30,CORSエラー,プロキシ設定を追加,API連携は早めに確認する
-2025-01-10,API連携,1.5,1.5,20,,,
-2025-01-09,環境構築,1.0,2.0,45,Docker起動しない,ポート競合を解消,事前にポート確認
+date,task_name,estimate_hours,actual_hours,memo,tags
+2025-01-10,ログイン画面実装,2.0,3.0,CORSエラーでハマった,task_type:新機能
+2025-01-10,API連携,1.5,1.5,,
+2025-01-09,環境構築,1.0,2.0,Docker起動しない。ポート競合を解消,project:案件A
 ```
 
 ## 技術仕様
@@ -81,7 +82,7 @@ date,task_name,estimate_hours,actual_hours,ai_minutes,problem,solution,learning
 
 | フラグ | 短縮形 | 説明 | デフォルト |
 |--------|--------|------|------------|
-| --output | -o | 出力先ディレクトリ | カレントディレクトリ |
+| --output | -o | 出力先ディレクトリ | カレントディレクトリ（設定ファイルで変更可） |
 | --from | - | 出力期間の開始日（YYYY-MM-DD） | - |
 | --to | - | 出力期間の終了日（YYYY-MM-DD） | - |
 
@@ -93,10 +94,8 @@ SELECT
   task_name,
   estimate_hours,
   actual_hours,
-  ai_minutes,
-  problem,
-  solution,
-  learning
+  memo,
+  tags
 FROM logs
 ORDER BY created_at ASC;
 ```
