@@ -18,3 +18,11 @@ Thumbs.db
 
 # Database (local dev)
 *.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# GoReleaser
+dist/

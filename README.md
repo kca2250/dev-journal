@@ -1,407 +1,279 @@
 # djou - Dev Journal CLI
 
-開発日誌（Dev Journal）をCLIで記録・管理するツール
+[![CI](https://github.com/kca2250/dev-journal/actions/workflows/ci.yml/badge.svg)](https://github.com/kca2250/dev-journal/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kca2250/dev-journal)](https://github.com/kca2250/dev-journal/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kca2250/dev-journal)](https://goreportcard.com/report/github.com/kca2250/dev-journal)
 
-## 概要
+A CLI tool for recording and managing your development journal.
 
-djouは、日々の開発作業を記録してデータを蓄積するためのCLIツールです。
+## Overview
 
-- 定量データ（見積もり時間、実績時間）と定性データ（メモ）を記録
-- 対話形式で簡単に入力
-- 蓄積したデータを集計・検索・エクスポート
-- タグによる分類・フィルタリング
+djou helps you track your daily development work by recording both quantitative data (work time, AI usage time) and qualitative data (learnings, blockers).
 
-## 技術スタック
+- Interactive form for easy input
+- Quick record mode for fast logging
+- Search, aggregate, and export your data
+- MCP server for AI assistant integration
 
-| 項目 | 内容 |
-|------|------|
-| 言語 | Go |
-| データ保存 | SQLite |
-| 保存先 | `~/.djou/djou.db` |
-| 対話UI | [charmbracelet/huh](https://github.com/charmbracelet/huh) |
-| CLI | [spf13/cobra](https://github.com/spf13/cobra) |
+## Installation
 
-## インストール
+### Homebrew (macOS/Linux)
 
-### go install
+```bash
+brew tap kca2250/tap
+brew install djou
+```
+
+### Go Install
 
 ```bash
 go install github.com/kca2250/djou/cmd/djou@latest
 ```
 
-### ソースからビルド
+### Download Binary
+
+Download from [GitHub Releases](https://github.com/kca2250/dev-journal/releases).
+
+## Quick Start
 
 ```bash
-git clone https://github.com/kca2250/dev-journal.git
-cd dev-journal
-go build -o djou ./cmd/djou
-```
+# Record a new entry (interactive)
+djou record
 
-## 使い方
+# Quick record (one-liner)
+djou record -q "Implemented login feature" -e 2 -a 3 -ai 30
 
-### 記録する (`djou`)
-
-対話形式で開発日誌を記録します。
-
-```bash
-$ djou
-
-? タスク名: ログイン画面実装
-? 見積時間 (h): 2
-? 実績時間 (h): 3
-? メモ: CORSエラーでハマった。プロキシ設定で解決。
-? タグ: task_type:新機能, project:案件A
-
-✅ ログを記録しました
-```
-
-#### 入力項目
-
-| 項目 | 必須 | 型 | 説明 |
-|------|------|-----|------|
-| タスク名 | ⭕ | string | 作業したタスクの名前 |
-| 見積時間 (h) | ⭕ | float | 見積もり時間（時間単位） |
-| 実績時間 (h) | ⭕ | float | 実際にかかった時間（時間単位） |
-| メモ | ❌ | string | 作業に関するメモ（複数行可） |
-| タグ | ❌ | string | カンマ区切りのタグ（例: `task_type:新機能, project:案件A`） |
-
-- 任意項目はEnterキーでスキップ可能
-- Ctrl+C または Esc で記録を中断
-
----
-
-### 一覧表示 (`djou list`)
-
-記録した開発日誌を一覧表示します。デフォルトでは対話モードで表示され、ログの選択・編集・削除が可能です。
-
-```bash
-# 直近10件を表示（デフォルト・対話モード）
+# List recent entries
 djou list
 
-# 今週の記録を表示
-djou list --week
-djou list -w
+# Search entries
+djou search "authentication"
 
-# 今月の記録を表示
-djou list --month
-djou list -m
-
-# 表示件数を指定
-djou list --limit 20
-djou list -l 20
-
-# タグでフィルタリング
-djou list --tag "project:案件A"
-
-# 非対話モード（テーブル表示のみ）
-djou list --no-interactive
+# View statistics
+djou stats
 ```
 
-#### オプション
+## Commands
 
-| フラグ | 短縮形 | 説明 | デフォルト |
-|--------|--------|------|------------|
-| `--week` | `-w` | 今週の記録を表示 | - |
-| `--month` | `-m` | 今月の記録を表示 | - |
-| `--limit` | `-l` | 表示件数を指定 | 10 |
-| `--tag` | - | タグでフィルタリング | - |
-| `--no-interactive` | - | 非対話モード（テーブル表示のみ） | - |
+| Command | Description |
+|---------|-------------|
+| `djou record` | Record a new development journal entry |
+| `djou list` | List recorded entries |
+| `djou search` | Search entries by keyword |
+| `djou stats` | Show statistics |
+| `djou export` | Export entries to CSV/JSON |
+| `djou config` | Manage configuration |
+| `djou version` | Show version information |
+| `djou mcp` | Start MCP server |
 
-※ `--week` と `--month` は排他的オプション（同時指定不可）
+## Usage
 
-#### 出力例
+### Record (`djou record`)
 
-```
-┌────────────┬──────────────────┬──────┬──────┐
-│ 日付       │ タスク           │ 見積 │ 実績 │
-├────────────┼──────────────────┼──────┼──────┤
-│ 2025-01-10 │ ログイン画面実装 │ 2.0h │ 3.0h │
-│ 2025-01-10 │ API連携          │ 1.5h │ 1.5h │
-│ 2025-01-09 │ 環境構築         │ 1.0h │ 2.0h │
-└────────────┴──────────────────┴──────┴──────┘
-```
-
-#### 対話モードでの操作
-
-対話モードでは、ログを選択して以下の操作が可能です：
-
-- **編集**: 選択したログの内容を編集
-- **削除**: 選択したログを削除（確認あり）
-- **キャンセル**: 一覧に戻る
-
----
-
-### 検索 (`djou search`)
-
-キーワードで開発日誌を検索します。
+Interactive form to record your development journal.
 
 ```bash
-# キーワード検索
+$ djou record
+
+? Task name: Login screen implementation
+? Estimate (h): 2
+? Actual (h): 3
+? AI usage (min): 30
+? Tags: feature, frontend
+? Blocker: CORS error
+? Solution: Added proxy configuration
+? Learning: Check API integration early
+
+✅ Recorded!
+```
+
+#### Quick Record Mode
+
+```bash
+djou record -q "Task name" -e 2 -a 3 -ai 30 -t "tag1,tag2"
+```
+
+### List (`djou list`)
+
+```bash
+# Recent 10 entries (default)
+djou list
+
+# This week's entries
+djou list --week
+
+# This month's entries
+djou list --month
+
+# With details
+djou list --detail
+```
+
+### Search (`djou search`)
+
+```bash
+# Keyword search
 djou search "CORS"
 
-# 複数キーワード（AND検索）
-djou search "CORS" "エラー"
+# Multiple keywords (AND search)
+djou search "CORS" "error"
 
-# 件数制限
-djou search "API" --limit 5
-djou search "API" -l 5
-
-# タグでフィルタリング
-djou search "API" --tag "project:案件A"
-
-# 詳細表示モード
+# With details
 djou search "API" --detail
-djou search "API" -d
 ```
 
-#### 検索対象フィールド
-
-- タスク名
-- メモ
-
-#### オプション
-
-| フラグ | 短縮形 | 説明 | デフォルト |
-|--------|--------|------|------------|
-| `--limit` | `-l` | 検索結果の表示件数を制限 | 無制限 |
-| `--tag` | - | タグでフィルタリング | - |
-| `--detail` | `-d` | 詳細表示モード | - |
-
-#### 出力例
-
-```
-🔍 検索結果: 2件
-
-┌────────────┬──────────────────┬──────────────┐
-│ 日付       │ タスク           │ マッチ箇所   │
-├────────────┼──────────────────┼──────────────┤
-│ 2025-01-10 │ ログイン画面実装 │ メモ         │
-│ 2025-01-08 │ API実装          │ タスク名     │
-└────────────┴──────────────────┴──────────────┘
-```
-
-#### 詳細表示モード (`--detail`)
-
-```
-┌────┬────────────┬──────────────────┬──────┬──────┬────────────┬──────────┐
-│ ID │ 日付       │ タスク           │ 見積 │ 実績 │ メモ       │ タグ     │
-├────┼────────────┼──────────────────┼──────┼──────┼────────────┼──────────┤
-│ 1  │ 2025-01-10 │ ログイン画面実装 │ 2.0h │ 3.0h │ CORSエラー │ 新機能   │
-└────┴────────────┴──────────────────┴──────┴──────┴────────────┴──────────┘
-```
-
----
-
-### 統計 (`djou stats`)
-
-記録の統計情報を表示します。
+### Statistics (`djou stats`)
 
 ```bash
-# 全体統計
+# Overall statistics
 djou stats
 
-# 月別統計一覧
+# Monthly statistics
 djou stats --month
-djou stats -m
-
-# 特定月の統計
-djou stats --month 2025-01
-djou stats -m 2025-01
 ```
 
-#### オプション
-
-| フラグ | 短縮形 | 説明 | デフォルト |
-|--------|--------|------|------------|
-| `--month` | `-m` | 月別統計を表示。値を指定すると特定月のみ表示 | - |
-
-#### 表示項目
-
-| 項目 | 説明 |
-|------|------|
-| 記録件数 | 記録の総数 |
-| 見積もり合計 | 見積もり時間の合計 |
-| 実績合計 | 実績時間の合計 |
-| 見積もり精度 | (見積もり合計 / 実績合計) × 100 |
-
-#### 出力例（全体統計）
-
-```
-統計情報
-
-期間: 2025-01-01 〜 2025-01-10
-総ログ数: 15件
-
-合計時間: 見積 25.0h / 実績 32.5h
-見積精度: 77%
-```
-
-#### 出力例（月別統計）
-
-```
-月別統計
-
-┌─────────┬───────┬──────┬──────┬────────┐
-│ 月      │ 件数  │ 見積 │ 実績 │ 精度   │
-├─────────┼───────┼──────┼──────┼────────┤
-│ 2025-01 │ 15    │ 25.0h│ 32.5h│ 77%    │
-│ 2024-12 │ 20    │ 30.0h│ 28.0h│ 107%   │
-└─────────┴───────┴──────┴──────┴────────┘
-```
-
----
-
-### CSV出力 (`djou export`)
-
-記録をCSVファイルに出力します。
+### Export (`djou export`)
 
 ```bash
-# カレントディレクトリに出力
+# Export to CSV
 djou export
 
-# 出力先を指定
+# Export to JSON
+djou export --format json
+
+# Specify output directory
 djou export --output ./reports
-djou export -o ./reports
-
-# 期間を指定
-djou export --from 2025-01-01 --to 2025-01-31
 ```
 
-#### オプション
+## MCP Server
 
-| フラグ | 短縮形 | 説明 | デフォルト |
-|--------|--------|------|------------|
-| `--output` | `-o` | 出力先ディレクトリ | カレントディレクトリ（設定ファイルで変更可） |
-| `--from` | - | 出力期間の開始日（YYYY-MM-DD） | - |
-| `--to` | - | 出力期間の終了日（YYYY-MM-DD） | - |
+djou includes an MCP (Model Context Protocol) server for AI assistant integration.
 
-#### ファイル名
+### Supported Tools
 
-- デフォルト: `djou_YYYY-MM.csv`（出力時の年月）
-- 同名ファイルが存在する場合: 連番を付与（`djou_2025-01_1.csv`）
+| Tool | Support |
+|------|---------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | ✅ |
+| [Claude Desktop](https://claude.ai/download) | ✅ |
+| [Cursor](https://cursor.sh/) | ✅ |
+| [Cline](https://github.com/cline/cline) | ✅ |
 
-#### 出力形式
+### Setup
 
-- 文字コード: UTF-8（BOM付き）※ Excelでの文字化け防止
-- CSVカラム: `date`, `task_name`, `estimate_hours`, `actual_hours`, `memo`, `tags`
+#### Claude Code
 
----
+Add to `~/.claude/claude_code_config.json`:
 
-### 設定 (`djou config`)
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
+```
 
-設定ファイルを管理します。設定ファイルは `~/.djou/config.yaml` に保存されます。
+#### Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### Cursor
+
+Add to Cursor Settings → MCP → Add Server:
+
+```json
+{
+  "djou": {
+    "command": "djou",
+    "args": ["mcp"]
+  }
+}
+```
+
+#### Cline (VS Code)
+
+Add to Cline MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "djou": {
+      "command": "djou",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `create_record` | Create a new journal entry |
+| `get_records` | Get journal entries with filters |
+| `update_record` | Update an existing entry |
+| `delete_record` | Delete an entry |
+
+### Usage Example
+
+Once configured, you can ask your AI assistant:
+
+- "Record that I worked on the login feature for 2 hours"
+- "Show my journal entries from this week"
+- "What did I learn yesterday?"
+
+## Configuration
 
 ```bash
-# 設定ファイルを初期化（テンプレートを作成）
-djou config init
+# Show current config
+djou config
 
-# 現在の設定を表示
-djou config show
+# Set default export directory
+djou config set export.default_dir ~/Documents/djou
 
-# エディタで設定ファイルを編集
-djou config edit
+# Set language (en/ja)
+djou config set language en
 ```
 
-#### サブコマンド
-
-| サブコマンド | 説明 |
-|-------------|------|
-| `init` | 設定ファイルのテンプレートを作成 |
-| `show` | 現在の設定内容を表示 |
-| `edit` | エディタで設定ファイルを開く（$EDITOR または vi） |
-
-#### 設定ファイル例
-
-```yaml
-# ~/.djou/config.yaml
-
-# タグ定義
-tags:
-  task_type:
-    - 新機能
-    - バグ修正
-    - リファクタ
-    - 調査
-  project:
-    - 案件A
-    - 案件B
-  tech_area:
-    - フロント
-    - バック
-    - インフラ
-
-# エクスポート設定
-export:
-  # デフォルトの出力先ディレクトリ
-  # 環境変数 DJOU_EXPORT_DIR でオーバーライド可能
-  output_dir: ~/Documents/dev-journal
-```
-
----
-
-### バージョン (`djou version`)
-
-バージョン情報を表示します。
-
-```bash
-djou version
-# => djou v0.1.3
-```
-
----
-
-### MCP サーバー (`djou mcp`)
-
-Model Context Protocol (MCP) サーバーとして起動します。Claude Code などの MCP クライアントから利用可能になります。
-
-```bash
-djou mcp
-```
-
----
-
-## データベース
-
-### 保存場所
+### Config File Location
 
 ```
-~/.djou/djou.db
+~/.djou/config.yaml
 ```
 
-### テーブル構造（logs）
+## Data Storage
 
-| カラム | 型 | 説明 |
-|--------|-----|------|
-| id | INTEGER PRIMARY KEY | 自動採番 |
-| created_at | DATETIME | 記録日時（自動） |
-| task_name | TEXT NOT NULL | タスク名 |
-| estimate_hours | REAL NOT NULL | 見積もり時間 |
-| actual_hours | REAL NOT NULL | 実績時間 |
-| memo | TEXT | メモ |
-| tags | TEXT | タグ（カンマ区切り） |
-
----
-
-## 開発
-
-### 必要な環境
-
-- Go 1.21以上
-
-### ビルド
-
-```bash
-go build -o djou ./cmd/djou
+```
+~/.djou/djou.db (SQLite)
 ```
 
-### テスト
+## Tech Stack
 
-```bash
-go test ./...
-```
+| Component | Technology |
+|-----------|------------|
+| Language | Go |
+| Database | SQLite |
+| Interactive UI | [charmbracelet/huh](https://github.com/charmbracelet/huh) |
+| CLI Framework | [spf13/cobra](https://github.com/spf13/cobra) |
 
-### CI
+## Contributing
 
-```bash
-make ci
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+[MIT License](LICENSE)
