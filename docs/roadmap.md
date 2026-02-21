@@ -86,19 +86,23 @@ make ci
 
 | ファイル | 内容 |
 |----------|------|
-| `internal/model/log.go` | Log構造体の強化（既存を拡張） |
-| `internal/db/db.go` | DB接続・初期化（既存を拡張） |
+| `internal/model/log.go` | Log構造体（task_name, estimate_hours, actual_hours, memo, tags） |
+| `internal/model/validation.go` | 入力バリデーション |
+| `internal/db/db.go` | DB接続・初期化 |
 | `internal/db/log_repository.go` | CRUD操作（Create, Read, Search, Aggregate） |
 
 ### 詳細タスク
 
-- [ ] `LogRepository` インターフェース定義
-- [ ] `Create(log *LogInput) error` - 記録の挿入
-- [ ] `List(opts ListOptions) ([]Log, error)` - 一覧取得（limit, week, month対応）
-- [ ] `Search(keywords []string, limit int) ([]Log, error)` - キーワード検索
-- [ ] `GetStats() (*Stats, error)` - 全体統計
-- [ ] `GetMonthlyStats(month string) (*Stats, error)` - 月別統計
-- [ ] `Export(from, to time.Time) ([]Log, error)` - エクスポート用データ取得
+- [x] `LogRepository` 実装
+- [x] `Create(log *LogInput) error` - 記録の挿入
+- [x] `List(opts ListOptions) ([]Log, error)` - 一覧取得（limit, week, month, tag対応）
+- [x] `Search(keywords []string, limit int) ([]Log, error)` - キーワード検索
+- [x] `GetStats() (*Stats, error)` - 全体統計
+- [x] `GetMonthlyStats() ([]MonthlyStats, error)` - 月別統計
+- [x] `Export(from, to time.Time) ([]Log, error)` - エクスポート用データ取得
+- [x] `GetById(id int64) (*Log, error)` - ID指定取得
+- [x] `Update(log *Log) error` - 記録更新
+- [x] `Delete(id int64) error` - 記録削除
 
 ### 完了条件
 
@@ -117,17 +121,17 @@ make ci
 
 | ファイル | 内容 |
 |----------|------|
-| `internal/ui/table.go` | テーブル出力（list, search, statsで共用） |
+| `internal/ui/table.go` | テーブル出力（CJK文字対応） |
 | `internal/ui/color.go` | カラー出力判定（TTY自動検出） |
 | `internal/ui/i18n.go` | 多言語対応（日本語/英語切替） |
 | `internal/ui/messages.go` | メッセージ定義 |
 
 ### 詳細タスク
 
-- [ ] `RenderTable(headers []string, rows [][]string)` - テーブル描画
-- [ ] `UseColor() bool` - カラー出力判定
-- [ ] `IsJapanese() bool` - 言語判定
-- [ ] メッセージ定数の定義（成功、エラー、確認）
+- [x] `RenderTable(headers []string, rows [][]string)` - テーブル描画
+- [x] `IsTTY()` - TTY判定（os.ModeCharDevice使用）
+- [x] `Localizer` - 言語判定・メッセージ取得
+- [x] メッセージ定数の定義（成功、エラー、確認）
 
 ### 完了条件
 
@@ -150,22 +154,24 @@ make ci
 
 | ファイル | 内容 |
 |----------|------|
-| `internal/cmd/root.go` | ルートコマンドの実装（既存を拡張） |
+| `internal/cmd/root.go` | ルートコマンドの実装 |
+| `internal/cmd/record.go` | 記録コマンド（Quick Record対応） |
 | `internal/ui/form.go` | 対話フォーム（huhライブラリ使用） |
 
 ### 詳細タスク
 
-- [ ] 対話フォームの実装（7項目）
-- [ ] バリデーション実装
-- [ ] Ctrl+C時の確認ダイアログ
-- [ ] DB保存処理
-- [ ] 成功メッセージ表示
+- [x] 対話フォームの実装（5項目: タスク名, 見積, 実績, メモ, タグ）
+- [x] バリデーション実装
+- [x] Ctrl+C / Esc での中断処理
+- [x] DB保存処理
+- [x] 成功メッセージ表示
+- [x] Quick Record モード（-t, -e, -a フラグ）
 
 ### 完了条件
 
 - `djou` コマンドで記録ができる
 - 任意項目をEnterでスキップできる
-- Ctrl+Cで確認メッセージが表示される
+- Quick Record で即時記録ができる
 
 ### 依存
 
@@ -189,20 +195,24 @@ make ci
 | ファイル | 内容 |
 |----------|------|
 | `internal/cmd/list.go` | listサブコマンド |
+| `internal/ui/interactive.go` | インタラクティブUI（選択・編集・削除） |
 
 ### 詳細タスク
 
-- [ ] `list` サブコマンドの追加
-- [ ] `--week`, `--month`, `--limit` オプション実装
-- [ ] オプション排他チェック
-- [ ] テーブル形式での出力
-- [ ] AI活用0分の場合は `-` 表示
+- [x] `list` サブコマンドの追加
+- [x] `--week`, `--month`, `--limit` オプション実装
+- [x] `--tag` オプション（タグフィルター）
+- [x] `--no-interactive` オプション
+- [x] オプション排他チェック
+- [x] テーブル形式での出力（日付, タスク, 見積, 実績）
+- [x] インタラクティブモード（編集・削除・キャンセル）
 
 ### 完了条件
 
 - `djou list` で一覧が表示される
 - 各オプションが正しく動作する
 - `--week` と `--month` の同時指定でエラー
+- 対話モードで編集・削除ができる
 
 ### 依存
 
@@ -229,11 +239,12 @@ make ci
 
 ### 詳細タスク
 
-- [ ] `search` サブコマンドの追加
-- [ ] 複数キーワードのAND検索
-- [ ] `--limit` オプション実装
-- [ ] 検索結果のテーブル表示
-- [ ] 詳細表示機能（選択 → 全フィールド表示）
+- [x] `search` サブコマンドの追加
+- [x] 複数キーワードのAND検索（task_name, memo対象）
+- [x] `--limit` オプション実装
+- [x] `--tag` オプション（タグフィルター）
+- [x] `--detail` オプション（詳細表示モード）
+- [x] 検索結果のテーブル表示
 
 ### 完了条件
 
@@ -266,10 +277,10 @@ make ci
 
 ### 詳細タスク
 
-- [ ] `stats` サブコマンドの追加
-- [ ] 全体統計の計算・表示
-- [ ] `--month` オプション（月別一覧 or 特定月指定）
-- [ ] ゼロ除算時は0%表示
+- [x] `stats` サブコマンドの追加
+- [x] 全体統計の計算・表示（件数, 期間, 見積/実績合計, 精度）
+- [x] `--month` オプション（月別一覧 or 特定月指定）
+- [x] ゼロ除算時は0%表示
 
 ### 完了条件
 
@@ -302,12 +313,12 @@ make ci
 
 ### 詳細タスク
 
-- [ ] `export` サブコマンドの追加
-- [ ] `--output` オプション（出力先指定）
-- [ ] `--from`, `--to` オプション（期間指定）
-- [ ] ファイル名自動生成（連番付与）
-- [ ] UTF-8 BOM付き出力
-- [ ] CSVエスケープ処理
+- [x] `export` サブコマンドの追加
+- [x] `--output` オプション（出力先指定、設定ファイル対応）
+- [x] `--from`, `--to` オプション（期間指定）
+- [x] ファイル名自動生成（連番付与）
+- [x] UTF-8 BOM付き出力
+- [x] CSVエスケープ処理
 
 ### 完了条件
 
@@ -323,15 +334,15 @@ make ci
 
 ## 進捗管理
 
-| Phase | 状態 | 開始日 | 完了日 |
-|-------|------|--------|--------|
-| Phase 1: DB操作・モデル | 未着手 | - | - |
-| Phase 2: UI共通部品 | 未着手 | - | - |
-| Phase 3: 記録機能 | 未着手 | - | - |
-| Phase 4: 一覧表示機能 | 未着手 | - | - |
-| Phase 5: 検索機能 | 未着手 | - | - |
-| Phase 6: 集計機能 | 未着手 | - | - |
-| Phase 7: CSV出力機能 | 未着手 | - | - |
+| Phase | 状態 |
+|-------|------|
+| Phase 1: DB操作・モデル | ✅ 完了 |
+| Phase 2: UI共通部品 | ✅ 完了 |
+| Phase 3: 記録機能 | ✅ 完了 |
+| Phase 4: 一覧表示機能 | ✅ 完了 |
+| Phase 5: 検索機能 | ✅ 完了 |
+| Phase 6: 集計機能 | ✅ 完了 |
+| Phase 7: CSV出力機能 | ✅ 完了 |
 
 ---
 

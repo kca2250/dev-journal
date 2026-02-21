@@ -30,12 +30,19 @@ func isJapanese() bool {
 ### 実装方針
 
 ```go
-import "github.com/mattn/go-isatty"
-
-func useColor() bool {
-    return isatty.IsTerminal(os.Stdout.Fd())
+func IsTTY(w io.Writer) bool {
+    if f, ok := w.(*os.File); ok {
+        info, err := f.Stat()
+        if err != nil {
+            return false
+        }
+        return info.Mode()&os.ModeCharDevice != 0
+    }
+    return false
 }
 ```
+
+外部ライブラリ（go-isatty）は使用せず、`os.ModeCharDevice` で判定する。
 
 ## 終了コード
 

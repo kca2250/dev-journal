@@ -35,7 +35,7 @@ djou の実装順序と依存関係を整理したドキュメント。
                                    │
                                    ▼
                     ┌─────────────────────────────┐
-                    │   🆕 MCP Server (mcp)       │
+                    │    MCP Server (mcp)         │
                     │         Phase 8             │
                     │  ※ Phase 1〜7 を再利用      │
                     └─────────────────────────────┘
@@ -63,21 +63,23 @@ Claude Code などの MCP クライアントから djou の機能を直接利用
 
 ### 詳細タスク
 
-- [ ] mcp-go ライブラリの導入
-- [ ] `mcp` サブコマンドの追加
-- [ ] MCP サーバーの初期化処理
-- [ ] `djou_record` Tool の実装
-- [ ] `djou_list` Tool の実装
-- [ ] `djou_search` Tool の実装
-- [ ] `djou_stats` Tool の実装
-- [ ] `djou_export` Tool の実装
-- [ ] エラーハンドリングの実装
-- [ ] Claude Code での動作確認
+- [x] mcp-go ライブラリの導入
+- [x] `mcp` サブコマンドの追加
+- [x] MCP サーバーの初期化処理
+- [x] `djou_record` Tool の実装
+- [x] `djou_list` Tool の実装
+- [x] `djou_search` Tool の実装
+- [x] `djou_stats` Tool の実装
+- [x] `djou_export` Tool の実装
+- [x] `djou_update` Tool の実装
+- [x] `djou_delete` Tool の実装
+- [x] エラーハンドリングの実装
+- [x] Claude Code での動作確認
 
 ### 完了条件
 
 - `djou mcp` で MCP サーバーが起動する
-- 5つの Tools が全て動作する
+- 7つの Tools が全て動作する
 - Claude Code から呼び出して記録・取得ができる
 - エラー時に適切なレスポンスを返す
 - 単体テストが通る
@@ -90,16 +92,16 @@ Claude Code などの MCP クライアントから djou の機能を直接利用
 
 ## 進捗管理（更新版）
 
-| Phase | 状態 | 開始日 | 完了日 |
-|-------|------|--------|--------|
-| Phase 1: DB操作・モデル | ✅ 完了 | - | - |
-| Phase 2: UI共通部品 | ✅ 完了 | - | - |
-| Phase 3: 記録機能 | ✅ 完了 | - | - |
-| Phase 4: 一覧表示機能 | ✅ 完了 | - | - |
-| Phase 5: 検索機能 | ✅ 完了 | - | - |
-| Phase 6: 集計機能 | ✅ 完了 | - | - |
-| Phase 7: CSV出力機能 | ✅ 完了 | - | - |
-| Phase 8: MCP Server | 🚧 着手予定 | - | - |
+| Phase | 状態 |
+|-------|------|
+| Phase 1: DB操作・モデル | ✅ 完了 |
+| Phase 2: UI共通部品 | ✅ 完了 |
+| Phase 3: 記録機能 | ✅ 完了 |
+| Phase 4: 一覧表示機能 | ✅ 完了 |
+| Phase 5: 検索機能 | ✅ 完了 |
+| Phase 6: 集計機能 | ✅ 完了 |
+| Phase 7: CSV出力機能 | ✅ 完了 |
+| Phase 8: MCP Server | ✅ 完了 |
 
 ---
 
